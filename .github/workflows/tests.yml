@@ -1,0 +1,68 @@
+name: Tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  unit:
+    name: Unit tests (PHP ${{ matrix.php }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['7.4', '8.0', '8.1', '8.2', '8.3', '8.4']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: dom, zip, mbstring
+          coverage: none
+      - name: Syntax of every PHP file
+        run: find . -name '*.php' -not -path './.git/*' -print0 | xargs -0 -n1 php -l
+      - name: Unit tests
+        run: php tests/run.php
+      - name: Translations up to date
+        run: php tools/i18n.php && git diff --exit-code languages/
+
+  wordpress:
+    name: Real WordPress ${{ matrix.wp }} (PHP ${{ matrix.php }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - php: '7.4'
+            wp: '6.0'
+          - php: '8.3'
+            wp: 'latest'
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+        ports: ['3306:3306']
+        options: --health-cmd="mysqladmin ping -proot" --health-interval=5s --health-timeout=5s --health-retries=20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: dom, zip, mbstring, gd, mysqli
+          tools: wp-cli
+          coverage: none
+      - name: Diagnostic and export on a real site
+        env:
+          DB_HOST: 127.0.0.1
+          DB_USER: root
+          DB_PASS: root
+          WP_VERSION: ${{ matrix.wp }}
+        run: bash tests/integration.sh
+      - name: Keep the package and reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: package-php${{ matrix.php }}-wp${{ matrix.wp }}
+          path: /tmp/eclair-export-it/out
+          retention-days: 7

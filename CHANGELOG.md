@@ -1,0 +1,15 @@
+# Changelog
+
+## 1.0.0 — 2026-11-08
+
+Première version.
+
+- Écran Outils › Exporter vers Éclair, en français, espagnol et anglais.
+- Diagnostic en lecture seule : contenus, médias, extensions détectées (Yoast, Rank Math, AIOSEO, Elementor, Divi, WooCommerce, WPML, Polylang, Redirection, ACF), shortcodes, points d'attention, score de compatibilité, estimation de durée.
+- Rapport client HTML aux couleurs d'Éclair (FR/ES/EN), imprimable en PDF, avec bloc « Préparé par » personnalisable.
+- Export par étapes AJAX avec reprise après coupure, archive découpée en parties, médias inclus ou téléchargés à l'import.
+- Conversion Gutenberg, éditeur classique, Elementor et Divi en HTML propre ; shortcodes non convertis gardés tels quels et listés.
+- SEO Yoast, Rank Math, AIOSEO ; redirections Redirection, Rank Math, AIOSEO, Yoast Premium, et redirections générées pour les archives WordPress.
+- Commandes WP-CLI : `wp eclair diagnose`, `wp eclair export`, `wp eclair cleanup`.
+- Sécurité : réservé à `manage_options`, nonces, dossier privé au nom aléatoire, suppression après téléchargement ou au bout de 24 h, aucun mot de passe exporté.
+- Format de paquet `eclair-export` 1.0 documenté dans `docs/FORMAT.md`.
