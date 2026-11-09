@@ -198,4 +198,7 @@ return array(
 	'This download link is no longer valid (the page stayed open too long, or you logged in again).' => 'Ce lien de téléchargement n’est plus valide (la page est restée ouverte trop longtemps, ou vous vous êtes reconnecté).',
 	'Back to the export page' => 'Retour à la page d’export',
 	'Link expired' => 'Lien expiré',
+	'The PHP "dom" extension is missing on this server: ask your host to enable it.' => 'L’extension PHP « dom » est absente de ce serveur : demandez à votre hébergeur de l’activer.',
+	'The PHP "dom" extension is missing' => 'L’extension PHP « dom » est absente',
+	'The contents cannot be converted on this server. Ask the host to enable it, or run the export with WP-CLI on a copy of the site.' => 'Les contenus ne peuvent pas être convertis sur ce serveur. Demandez à l’hébergeur de l’activer, ou lancez l’export avec WP-CLI sur une copie du site.',
 );

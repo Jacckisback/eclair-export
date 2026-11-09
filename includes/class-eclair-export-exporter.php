@@ -55,6 +55,9 @@ final class Eclair_Export_Exporter {
 		if ( ! class_exists( 'ZipArchive' ) ) {
 			throw new RuntimeException( __( 'The PHP "zip" extension is missing on this server: ask your host to enable it.', 'eclair-export' ) );
 		}
+		if ( ! class_exists( 'DOMDocument' ) ) {
+			throw new RuntimeException( __( 'The PHP "dom" extension is missing on this server: ask your host to enable it.', 'eclair-export' ) );
+		}
 		self::cancel();
 		$id  = bin2hex( random_bytes( 16 ) );
 		$job = array(

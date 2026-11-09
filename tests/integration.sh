@@ -24,6 +24,20 @@ wp --path=$WP_DIR --allow-root core install --url=https://www.example.test --tit
 $WP rewrite structure '/%year%/%monthnum%/%postname%/' --quiet
 ln -s "$PLUGIN_DIR" "$WP_DIR/wp-content/plugins/eclair-export"
 $WP plugin activate eclair-export --quiet
+
+# Second copy of the plugin (the folder made by GitHub's "Download ZIP"): its activation is refused with a message,
+# never a fatal error; the site keeps working; deleting it keeps the data of the copy in use (regression 1.0.2).
+mkdir "$WP_DIR/wp-content/plugins/eclair-export-main"
+(cd "$PLUGIN_DIR" && tar --exclude=.git -cf - .) | tar -xf - -C "$WP_DIR/wp-content/plugins/eclair-export-main"
+$WP option update eclair_export_branding '{"name":"Keep me"}' --format=json --quiet
+if DUP=$($WP plugin activate eclair-export-main 2>&1); then echo "FAIL: duplicate copy was activated"; exit 1; fi
+echo "$DUP" | grep -q "Une autre copie" || { echo "FAIL: no clear message for the duplicate copy: $DUP"; exit 1; }
+if echo "$DUP" | grep -qi "fatal"; then echo "FAIL: fatal error with a duplicate copy: $DUP"; exit 1; fi
+$WP plugin is-active eclair-export || { echo "FAIL: the first copy was deactivated"; exit 1; }
+$WP plugin delete eclair-export-main --quiet
+test "$($WP option get eclair_export_branding --format=json)" = '{"name":"Keep me"}' || { echo "FAIL: deleting the duplicate erased the data"; exit 1; }
+$WP option delete eclair_export_branding --quiet
+echo "Duplicate copy OK"
 # The latest Yoast or Redirection may refuse an old WordPress: the test then goes on without them.
 $WP plugin install wordpress-seo redirection --activate --quiet || true
 YOAST=$($WP plugin is-active wordpress-seo && echo 1 || echo 0)
