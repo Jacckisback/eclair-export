@@ -280,7 +280,8 @@ final class Eclair_Export_Exporter {
 				}
 				self::append( $dir, $file, Eclair_Export_Util::json( $record ) );
 				self::append( $dir, 'seo-posts.jsonl', Eclair_Export_Util::json( array( 'id' => (int) $post->ID, 'seo' => $seo ) ) );
-				if ( 'publish' === $post->post_status && '' === $post->post_password ) {
+				// La page des articles de WordPress est listée à part (« blog ») : Éclair la remplace par son blog.
+				if ( 'publish' === $post->post_status && '' === $post->post_password && (int) $post->ID !== (int) get_option( 'page_for_posts' ) ) {
 					self::append( $dir, 'urls.csv', self::csv( array( $record['url'], 'content', $type . ':' . $post->ID ) ) );
 				}
 				self::merge( $job, $report, $record );
