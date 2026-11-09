@@ -13,3 +13,7 @@ Première version.
 - Commandes WP-CLI : `wp eclair diagnose`, `wp eclair export`, `wp eclair cleanup`.
 - Sécurité : réservé à `manage_options`, nonces, dossier privé au nom aléatoire, suppression après téléchargement ou au bout de 24 h, aucun mot de passe exporté.
 - Format de paquet `eclair-export` 1.0 documenté dans `docs/FORMAT.md`.
+- La page des articles de WordPress est listée comme « blog » dans `urls.csv` (Éclair la remplace par son blog), plus comme un contenu.
+- Banc d'essai de bout en bout (`tests/e2e/`, lancé par la CI) : WordPress réaliste (500 articles, Elementor, Divi, Yoast, WooCommerce, Polylang, Redirection) → export → import dans Éclair → 635 anciennes adresses vérifiées : 0 erreur 404, 0 chaîne de redirections, chaque contenu sur la page qui porte son titre.
+- Vérification manuelle en 10 minutes : `docs/VERIFICATION.md`.
+- Nécessite, côté Éclair, la fonction Import WordPress avec l'import de paquet (Éclair après 2.0.1).

@@ -24,6 +24,27 @@ Extension WordPress qui diagnostique le site, puis l'exporte en un paquet comple
 
 Format complet du paquet : [docs/FORMAT.md](docs/FORMAT.md).
 
+## Côté Éclair : import et rapport client
+
+Dans Éclair CMS (fonction **Import WordPress**, livrée avec Éclair) :
+
+1. Envoie toutes les parties du paquet, ou dépose-les par FTP dans `data/import/` si elles dépassent la limite de ton hébergeur.
+2. **Simuler** : Éclair montre ce qu'il va créer (contenus, adresses gardées ou redirigées, médias, éléments non migrés) sans rien écrire.
+3. **Importer** : chaque adresse est gardée à l'identique ou redirigée en 301, les liens internes et les images sont réécrits, le SEO, les menus, la page d'accueil et les redirections sont repris, la boutique est ouverte si des produits WooCommerce arrivent. Réimporter le même paquet ne crée aucun doublon.
+4. **Rapport de migration** pour le client (FR, ES, EN), à imprimer en PDF : contenus, chaque ancienne adresse vérifiée (« zéro 404 » quand c'est vrai), redirections, éléments non migrés et leur raison, liste de contrôle SEO, vitesse avant/après mesurée par Google PageSpeed. Mesure l'ancien site **avant** de basculer le domaine.
+
+En SSH, pour migrer des sites à la chaîne :
+
+```bash
+php app/bundled/wordpress/lib/cli.php import paquet.zip paquet-part2.zip --dry-run
+```
+
+```bash
+php app/bundled/wordpress/lib/cli.php import paquet.zip paquet-part2.zip
+```
+
+Vérifications à faire à la main après l'import (10 minutes) : [docs/VERIFICATION.md](docs/VERIFICATION.md).
+
 ## Sécurité
 
 - Écran et actions réservés aux administrateurs (`manage_options`), nonce sur chaque action.

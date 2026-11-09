@@ -24,6 +24,27 @@ A WordPress plugin that diagnoses the site, then exports it as a complete packag
 
 Full package format: [docs/FORMAT.md](docs/FORMAT.md) (in French).
 
+## On the Éclair side: import and client report
+
+In Éclair CMS (the **WordPress import** feature shipped with Éclair):
+
+1. Upload every part of the package, or drop them by FTP into `data/import/` if they exceed your host's upload limit.
+2. **Simulate**: Éclair shows what it will create (contents, addresses kept or redirected, media, items not migrated) without writing anything.
+3. **Import**: every address is kept exactly or redirected with a 301, internal links and images are rewritten, SEO, menus, home page and redirections are taken over, the shop is opened when WooCommerce products arrive. Re-importing the same package creates no duplicate.
+4. **Migration report** for the client (FR, ES, EN), printable as PDF: contents, every old address checked ("zero 404" when true), redirections, items not migrated with their reason, SEO checklist, speed before/after measured with Google PageSpeed. Measure the old site **before** switching the domain.
+
+Over SSH, to migrate sites in series:
+
+```bash
+php app/bundled/wordpress/lib/cli.php import package.zip package-part2.zip --dry-run
+```
+
+```bash
+php app/bundled/wordpress/lib/cli.php import package.zip package-part2.zip
+```
+
+End-to-end test bench (CI): a realistic WordPress (500 Gutenberg posts, Elementor, Divi, Yoast, WooCommerce, Polylang in two languages, Redirection) is exported, imported into Éclair, and every old public address is requested: 635 addresses, 0 errors 404, 0 redirect chains. Manual checks (10 minutes, in French): [docs/VERIFICATION.md](docs/VERIFICATION.md).
+
 ## Security
 
 - Screen and actions for administrators only (`manage_options`), nonce on every action.
