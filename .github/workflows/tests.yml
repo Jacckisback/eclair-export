@@ -7,7 +7,7 @@ on:
     inputs:
       eclair_branch:
         description: Branche d'Éclair CMS à tester
-        default: claude/admiring-allen-mve8ya
+        default: main
 
 jobs:
   unit:
@@ -96,8 +96,8 @@ jobs:
           DB_HOST: 127.0.0.1
           DB_USER: root
           DB_PASS: root
-          # Branche d'Éclair qui contient l'import de paquet ; passer à main une fois fusionnée.
-          ECLAIR_BRANCH: ${{ github.event.inputs.eclair_branch || 'claude/admiring-allen-mve8ya' }}
+          # Branche d'Éclair testée : main, ou une autre branche choisie au lancement manuel.
+          ECLAIR_BRANCH: ${{ github.event.inputs.eclair_branch || 'main' }}
         run: bash tests/e2e/run.sh
       - name: Rapports (diagnostic, import, vérification, rapport de migration)
         if: always()
