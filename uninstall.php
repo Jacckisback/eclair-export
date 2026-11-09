@@ -7,6 +7,14 @@
 
 defined( 'WP_UNINSTALL_PLUGIN' ) || exit;
 
+// Deleting a duplicate copy (e.g. "eclair-export-main") must not erase the data of the copy still in use.
+$eclair_export_active = array_merge( (array) get_option( 'active_plugins', array() ), array_keys( (array) get_site_option( 'active_sitewide_plugins', array() ) ) );
+foreach ( $eclair_export_active as $eclair_export_plugin ) {
+	if ( '/eclair-export.php' === substr( (string) $eclair_export_plugin, -18 ) && WP_UNINSTALL_PLUGIN !== $eclair_export_plugin ) {
+		return;
+	}
+}
+
 $eclair_export_name = get_option( 'eclair_export_storage' );
 if ( is_string( $eclair_export_name ) && preg_match( '~^eclair-export-[a-f0-9]{32}$~', $eclair_export_name ) ) {
 	$eclair_export_uploads = wp_upload_dir( null, false );

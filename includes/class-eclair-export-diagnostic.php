@@ -49,6 +49,7 @@ final class Eclair_Export_Diagnostic {
 				'max_time'    => (int) ini_get( 'max_execution_time' ),
 				'memory'      => (string) ini_get( 'memory_limit' ),
 				'zip'         => class_exists( 'ZipArchive' ),
+				'dom'         => class_exists( 'DOMDocument' ),
 			),
 		);
 
@@ -223,6 +224,9 @@ final class Eclair_Export_Diagnostic {
 		}
 		if ( ! $d['site']['zip'] ) {
 			$add( 'high', __( 'The PHP "zip" extension is missing', 'eclair-export' ), __( 'The archive cannot be built on this server. Ask the host to enable it, or run the export with WP-CLI on a copy of the site.', 'eclair-export' ) );
+		}
+		if ( isset( $d['site']['dom'] ) && ! $d['site']['dom'] ) {
+			$add( 'high', __( 'The PHP "dom" extension is missing', 'eclair-export' ), __( 'The contents cannot be converted on this server. Ask the host to enable it, or run the export with WP-CLI on a copy of the site.', 'eclair-export' ) );
 		}
 		if ( $d['total_content'] > self::ECLAIR['contents'] ) {
 			/* translators: 1: number of contents, 2: Éclair limit */

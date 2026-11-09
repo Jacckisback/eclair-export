@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.0.2 — 2026-11-09
+
+- Démarrage sûr : l'extension ne provoque plus jamais d'« erreur fatale » à l'activation.
+  - Deux copies installées (par exemple `eclair-export` et `eclair-export-main`, le dossier créé par « Download ZIP » de GitHub) : la seconde refuse de s'activer avec un message clair qui nomme le dossier à supprimer. Avant, WordPress affichait « erreur fatale » (`Cannot declare class`).
+  - PHP ou WordPress trop ancien, fichier manquant, toute erreur au chargement : message clair à la place de l'erreur fatale.
+  - Supprimer la copie en double n'efface plus les données de la copie utilisée.
+- Extension PHP « dom » absente : signalée par le diagnostic et à l'export, au lieu d'une erreur.
+- Test sur un vrai WordPress : activation d'une seconde copie, suppression de la copie.
+
 ## 1.0.1 — 2026-11-09
 
 - Correctif : le bouton « Télécharger » renvoyait toujours l'écran WordPress « Le lien suivi est expiré ». Le lien était échappé pour le HTML (`&amp;`) puis placé tel quel par le JavaScript : le jeton de sécurité n'arrivait jamais. Les liens sont maintenant des URL brutes, vérifiées par un test unitaire et par le test d'intégration WordPress.
