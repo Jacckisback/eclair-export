@@ -134,15 +134,15 @@ msgstr "Annuler"
 msgid "Cancel the export and delete the files already prepared?"
 msgstr "Annuler l’export et supprimer les fichiers déjà préparés ?"
 
-#: includes/class-eclair-export-exporter.php:421
+#: includes/class-eclair-export-exporter.php:422
 msgid "Cannot create the archive (ZIP error %s)."
 msgstr "Impossible de créer l’archive (erreur ZIP %s)."
 
-#: includes/class-eclair-export-exporter.php:428
+#: includes/class-eclair-export-exporter.php:429
 msgid "Cannot write the archive: the disk may be full."
 msgstr "Impossible d’écrire l’archive : le disque est peut-être plein."
 
-#: includes/class-eclair-export-exporter.php:202 includes/class-eclair-export-exporter.php:212 includes/class-eclair-export-exporter.php:510
+#: includes/class-eclair-export-exporter.php:202 includes/class-eclair-export-exporter.php:212 includes/class-eclair-export-exporter.php:511
 msgid "Cannot write the export files: the disk may be full."
 msgstr "Impossible d’écrire les fichiers de l’export : le disque est peut-être plein."
 
@@ -174,7 +174,7 @@ msgstr "Connexion perdue, nouvel essai dans quelques secondes…"
 msgid "Contents"
 msgstr "Contenus"
 
-#: includes/class-eclair-export-exporter.php:641
+#: includes/class-eclair-export-exporter.php:642
 msgid "Contents: %1$s of %2$s"
 msgstr "Contenus : %1$s sur %2$s"
 
@@ -274,7 +274,7 @@ msgstr "Redirections existantes et anciens liens ?p="
 msgid "Export"
 msgstr "Export"
 
-#: includes/class-eclair-export-exporter.php:646
+#: includes/class-eclair-export-exporter.php:647
 msgid "Export finished."
 msgstr "Export terminé."
 
@@ -354,7 +354,7 @@ msgstr "Beaucoup de sites à migrer ? Le même export se lance en ligne de comma
 msgid "Media"
 msgstr "Médias"
 
-#: includes/class-eclair-export-exporter.php:643
+#: includes/class-eclair-export-exporter.php:644
 msgid "Media: %1$s of %2$s"
 msgstr "Médias : %1$s sur %2$s"
 
@@ -494,7 +494,7 @@ msgstr "Points d’attention"
 msgid "Prepared by"
 msgstr "Préparé par"
 
-#: includes/class-eclair-export-exporter.php:639
+#: includes/class-eclair-export-exporter.php:640
 msgid "Preparing (settings, authors, categories, menus)…"
 msgstr "Préparation (réglages, auteurs, catégories, menus)…"
 
@@ -522,7 +522,7 @@ msgstr "Diagnostic en lecture seule : rien n’a été exporté ni modifié sur 
 msgid "Redirections with patterns"
 msgstr "Redirections avec motifs"
 
-#: includes/class-eclair-export-exporter.php:644
+#: includes/class-eclair-export-exporter.php:645
 msgid "Redirections…"
 msgstr "Redirections…"
 
@@ -734,7 +734,7 @@ msgstr "Produits WooCommerce : catalogue avec liens de paiement"
 msgid "WordPress %1$s · PHP %2$s · theme %3$s"
 msgstr "WordPress %1$s · PHP %2$s · thème %3$s"
 
-#: includes/class-eclair-export-exporter.php:645
+#: includes/class-eclair-export-exporter.php:646
 msgid "Writing the archive…"
 msgstr "Écriture de l’archive…"
 

@@ -155,16 +155,16 @@ msgid "Cancel the export and delete the files already prepared?"
 msgstr ""
 
 #. translators: %s: error code
-#: includes/class-eclair-export-exporter.php:421
+#: includes/class-eclair-export-exporter.php:422
 #, php-format
 msgid "Cannot create the archive (ZIP error %s)."
 msgstr ""
 
-#: includes/class-eclair-export-exporter.php:428
+#: includes/class-eclair-export-exporter.php:429
 msgid "Cannot write the archive: the disk may be full."
 msgstr ""
 
-#: includes/class-eclair-export-exporter.php:202 includes/class-eclair-export-exporter.php:212 includes/class-eclair-export-exporter.php:510
+#: includes/class-eclair-export-exporter.php:202 includes/class-eclair-export-exporter.php:212 includes/class-eclair-export-exporter.php:511
 msgid "Cannot write the export files: the disk may be full."
 msgstr ""
 
@@ -198,7 +198,7 @@ msgid "Contents"
 msgstr ""
 
 #. translators: 1: contents done, 2: total
-#: includes/class-eclair-export-exporter.php:641
+#: includes/class-eclair-export-exporter.php:642
 #, php-format
 msgid "Contents: %1$s of %2$s"
 msgstr ""
@@ -305,7 +305,7 @@ msgstr ""
 msgid "Export"
 msgstr ""
 
-#: includes/class-eclair-export-exporter.php:646
+#: includes/class-eclair-export-exporter.php:647
 msgid "Export finished."
 msgstr ""
 
@@ -388,7 +388,7 @@ msgid "Media"
 msgstr ""
 
 #. translators: 1: media done, 2: total
-#: includes/class-eclair-export-exporter.php:643
+#: includes/class-eclair-export-exporter.php:644
 #, php-format
 msgid "Media: %1$s of %2$s"
 msgstr ""
@@ -538,7 +538,7 @@ msgstr ""
 msgid "Prepared by"
 msgstr ""
 
-#: includes/class-eclair-export-exporter.php:639
+#: includes/class-eclair-export-exporter.php:640
 msgid "Preparing (settings, authors, categories, menus)…"
 msgstr ""
 
@@ -567,7 +567,7 @@ msgstr ""
 msgid "Redirections with patterns"
 msgstr ""
 
-#: includes/class-eclair-export-exporter.php:644
+#: includes/class-eclair-export-exporter.php:645
 msgid "Redirections…"
 msgstr ""
 
@@ -787,7 +787,7 @@ msgstr ""
 msgid "WordPress %1$s · PHP %2$s · theme %3$s"
 msgstr ""
 
-#: includes/class-eclair-export-exporter.php:645
+#: includes/class-eclair-export-exporter.php:646
 msgid "Writing the archive…"
 msgstr ""
 
