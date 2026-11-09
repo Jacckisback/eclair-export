@@ -190,11 +190,28 @@ final class Eclair_Export_Plugin {
 		wp_send_json_success();
 	}
 
-	/** Download links (with their nonce) of the finished parts. */
+	/**
+	 * Download links (with their nonce) of the finished parts.
+	 *
+	 * Raw URLs on purpose: they travel as JSON and the JavaScript puts them in a.href as they are. wp_nonce_url()
+	 * would escape them for HTML (&amp;), the nonce would then arrive as "amp;_wpnonce" and every download would
+	 * fail with "The link you followed has expired".
+	 */
+	public static function download_url( $file ) {
+		return add_query_arg(
+			array(
+				'action'   => 'eclair_export_download',
+				'file'     => rawurlencode( (string) $file ),
+				'_wpnonce' => wp_create_nonce( self::NONCE ),
+			),
+			admin_url( 'admin-post.php' )
+		);
+	}
+
 	public static function with_links( array $progress ) {
 		if ( ! empty( $progress['parts'] ) ) {
 			foreach ( $progress['parts'] as $i => $part ) {
-				$progress['parts'][ $i ]['url']   = wp_nonce_url( admin_url( 'admin-post.php?action=eclair_export_download&file=' . rawurlencode( $part['file'] ) ), self::NONCE );
+				$progress['parts'][ $i ]['url']   = self::download_url( $part['file'] );
 				$progress['parts'][ $i ]['human'] = Eclair_Export_Util::size( isset( $part['size'] ) ? $part['size'] : $part['bytes'] );
 			}
 		}
@@ -207,7 +224,15 @@ final class Eclair_Export_Plugin {
 		if ( ! current_user_can( self::CAP ) ) {
 			wp_die( esc_html__( 'You are not allowed to export this site.', 'eclair-export' ), 403 );
 		}
-		check_admin_referer( self::NONCE );
+		$nonce = isset( $_GET['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_GET['_wpnonce'] ) ) : '';
+		if ( ! wp_verify_nonce( $nonce, self::NONCE ) ) {
+			// Clear message and a way back, instead of WordPress's generic "The link you followed has expired".
+			wp_die(
+				'<p>' . esc_html__( 'This download link is no longer valid (the page stayed open too long, or you logged in again).', 'eclair-export' ) . '</p><p><a class="button button-primary" href="' . esc_url( admin_url( 'tools.php?page=' . self::SLUG ) ) . '">' . esc_html__( 'Back to the export page', 'eclair-export' ) . '</a></p>',
+				esc_html__( 'Link expired', 'eclair-export' ),
+				array( 'response' => 403 )
+			);
+		}
 	}
 
 	/** Report as a file (or as a page to print / save as PDF), in the language asked for. */

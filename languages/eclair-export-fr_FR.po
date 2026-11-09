@@ -122,6 +122,10 @@ msgstr "Audio"
 msgid "Authors"
 msgstr "Auteurs"
 
+#: includes/class-eclair-export-plugin.php:231
+msgid "Back to the export page"
+msgstr "Retour à la page d’export"
+
 #: includes/class-eclair-export-report.php:229
 msgid "Block editor (Gutenberg)"
 msgstr "Éditeur de blocs (Gutenberg)"
@@ -342,6 +346,10 @@ msgstr "Langue de chaque contenu et liens entre traductions"
 msgid "Languages not offered by Éclair"
 msgstr "Langues non proposées par Éclair"
 
+#: includes/class-eclair-export-plugin.php:232
+msgid "Link expired"
+msgstr "Lien expiré"
+
 #: includes/class-eclair-export-diagnostic.php:286
 msgid "Many redirections"
 msgstr "Nombreuses redirections"
@@ -546,7 +554,7 @@ msgstr "Lancer le diagnostic"
 msgid "Run the diagnostic again"
 msgstr "Relancer le diagnostic"
 
-#: includes/class-eclair-export-plugin.php:218
+#: includes/class-eclair-export-plugin.php:243
 msgid "Run the diagnostic first."
 msgstr "Lancez d’abord le diagnostic."
 
@@ -666,7 +674,11 @@ msgstr "Le dossier des fichiers envoyés (uploads) n’est pas accessible en éc
 msgid "They stay in the text as written and are listed in the report, to be replaced by hand: %s."
 msgstr "Ils restent dans le texte tels quels et sont listés dans le rapport, à remplacer à la main : %s."
 
-#: includes/class-eclair-export-plugin.php:263
+#: includes/class-eclair-export-plugin.php:231
+msgid "This download link is no longer valid (the page stayed open too long, or you logged in again)."
+msgstr "Ce lien de téléchargement n’est plus valide (la page est restée ouverte trop longtemps, ou vous vous êtes reconnecté)."
+
+#: includes/class-eclair-export-plugin.php:288
 msgid "This file no longer exists: it was already downloaded or is more than 24 hours old."
 msgstr "Ce fichier n’existe plus : il a déjà été téléchargé ou date de plus de 24 heures."
 
@@ -738,7 +750,7 @@ msgstr "WordPress %1$s · PHP %2$s · thème %3$s"
 msgid "Writing the archive…"
 msgstr "Écriture de l’archive…"
 
-#: includes/class-eclair-export-plugin.php:95 includes/class-eclair-export-plugin.php:142 includes/class-eclair-export-plugin.php:208
+#: includes/class-eclair-export-plugin.php:95 includes/class-eclair-export-plugin.php:142 includes/class-eclair-export-plugin.php:225
 msgid "You are not allowed to export this site."
 msgstr "Vous n’avez pas le droit d’exporter ce site."
 

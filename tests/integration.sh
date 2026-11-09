@@ -102,4 +102,13 @@ fi
 # Second export with media left on the old site: one single small archive.
 $WP eclair export --output="$OUT/remote" --media=remote
 test "$(ls "$OUT/remote"/*.zip | wc -l)" -eq 1 || { echo "FAIL: remote export should be one archive"; exit 1; }
+# Download links travel as JSON into a.href: they must be raw URLs whose nonce WordPress accepts (regression 1.0.1).
+$WP eval --user=admin '
+$url = Eclair_Export_Plugin::download_url( "eclair-export-site-20260101-000000-abcdef.zip" );
+if ( false !== strpos( $url, "&amp;" ) ) { echo "FAIL: escaped download URL: $url\n"; exit( 1 ); }
+parse_str( (string) wp_parse_url( $url, PHP_URL_QUERY ), $q );
+if ( empty( $q["_wpnonce"] ) || ! wp_verify_nonce( $q["_wpnonce"], Eclair_Export_Plugin::NONCE ) ) { echo "FAIL: download nonce rejected: $url\n"; exit( 1 ); }
+if ( "eclair_export_download" !== $q["action"] || "eclair-export-site-20260101-000000-abcdef.zip" !== $q["file"] ) { echo "FAIL: download URL arguments: $url\n"; exit( 1 ); }
+echo "Download link OK\n";
+'
 echo "Integration test passed."
