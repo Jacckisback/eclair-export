@@ -3,6 +3,11 @@ name: Tests
 on:
   push:
   pull_request:
+  workflow_dispatch:
+    inputs:
+      eclair_branch:
+        description: Branche d'Éclair CMS à tester
+        default: claude/admiring-allen-mve8ya
 
 jobs:
   unit:
@@ -66,3 +71,43 @@ jobs:
           name: package-php${{ matrix.php }}-wp${{ matrix.wp }}
           path: /tmp/eclair-export-it/out
           retention-days: 7
+
+  migration:
+    name: Migration de bout en bout (500 articles, Elementor, WooCommerce, 2 langues)
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+        ports: ['3306:3306']
+        options: --health-cmd="mysqladmin ping -proot" --health-interval=5s --health-timeout=5s --health-retries=20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: dom, zip, mbstring, gd, mysqli, intl, sodium, curl
+          tools: wp-cli
+          coverage: none
+      - name: WordPress → Eclair Export → Éclair, chaque ancienne adresse vérifiée
+        env:
+          DB_HOST: 127.0.0.1
+          DB_USER: root
+          DB_PASS: root
+          # Branche d'Éclair qui contient l'import de paquet ; passer à main une fois fusionnée.
+          ECLAIR_BRANCH: ${{ github.event.inputs.eclair_branch || 'claude/admiring-allen-mve8ya' }}
+        run: bash tests/e2e/run.sh
+      - name: Rapports (diagnostic, import, vérification, rapport de migration)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: migration-e2e
+          path: |
+            /tmp/eclair-e2e/out/*.html
+            /tmp/eclair-e2e/out/*.json
+            /tmp/eclair-e2e/out/*.md
+            /tmp/eclair-e2e/out/*.csv
+            /tmp/eclair-e2e/out/*.log
+          retention-days: 14
