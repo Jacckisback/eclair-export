@@ -22,7 +22,8 @@ final class Eclair_Export_Plugin {
 		add_action( 'admin_menu', array( __CLASS__, 'menu' ) );
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'assets' ) );
 		add_action( self::CRON, array( __CLASS__, 'cleanup' ) );
-		foreach ( array( 'diagnose', 'start', 'step', 'cancel', 'branding' ) as $action ) {
+		Eclair_Export_Abilities::boot();
+		foreach ( array( 'diagnose', 'start', 'step', 'cancel', 'branding', 'connect', 'send' ) as $action ) {
 			add_action( 'wp_ajax_eclair_export_' . $action, array( __CLASS__, 'ajax_' . $action ) );
 		}
 		add_action( 'admin_post_eclair_export_report', array( __CLASS__, 'report' ) );
@@ -42,6 +43,7 @@ final class Eclair_Export_Plugin {
 
 	public static function deactivate() {
 		wp_clear_scheduled_hook( self::CRON );
+		Eclair_Export_Sender::cancel();
 		Eclair_Export_Exporter::cancel();
 		Eclair_Export_Storage::cleanup( 0 );
 	}
@@ -51,6 +53,10 @@ final class Eclair_Export_Plugin {
 		$job = Eclair_Export_Exporter::job();
 		if ( $job && (int) $job['created'] < time() - Eclair_Export_Storage::TTL ) {
 			Eclair_Export_Exporter::cancel();
+		}
+		$send = Eclair_Export_Sender::state();
+		if ( $send && (int) $send['created'] < time() - Eclair_Export_Storage::TTL ) {
+			Eclair_Export_Sender::cancel(); // The link key is never kept longer than the package.
 		}
 		Eclair_Export_Storage::cleanup();
 	}
@@ -74,7 +80,8 @@ final class Eclair_Export_Plugin {
 		wp_localize_script( 'eclair-export', 'EclairExport', array(
 			'ajax'     => admin_url( 'admin-ajax.php' ),
 			'nonce'    => wp_create_nonce( self::NONCE ),
-			'progress' => self::with_links( Eclair_Export_Exporter::progress( Eclair_Export_Exporter::job() ) ),
+			'progress' => self::state(),
+			'diagnosed' => (bool) Eclair_Export_Diagnostic::last(),
 			'i18n'     => array(
 				'running'   => __( 'Diagnostic in progress… (up to a minute on a large site)', 'eclair-export' ),
 				'failed'    => __( 'The request failed. Check your connection, then try again.', 'eclair-export' ),
@@ -85,6 +92,11 @@ final class Eclair_Export_Plugin {
 				/* translators: %d: part number */
 				'part'      => __( 'Part %d', 'eclair-export' ),
 				'saved'     => __( 'Saved.', 'eclair-export' ),
+				'checking'  => __( 'Checking the key with your Éclair site…', 'eclair-export' ),
+				'sendpause' => __( 'Transfer paused: it will resume from where it stopped.', 'eclair-export' ),
+				'sendleave' => __( 'The transfer is running: if you leave, it will resume when you come back.', 'eclair-export' ),
+				'start'     => __( 'Start the migration', 'eclair-export' ),
+				'startonly' => __( 'Prepare the package', 'eclair-export' ),
 				'leave'     => __( 'The export is running: if you leave, it will resume when you come back.', 'eclair-export' ),
 			),
 		) );
@@ -98,15 +110,21 @@ final class Eclair_Export_Plugin {
 		$job        = Eclair_Export_Exporter::job();
 		$branding   = Eclair_Export_Report::branding();
 		$types      = Eclair_Export_Util::content_types();
+		$sending    = (bool) Eclair_Export_Sender::state();
 		include ECLAIR_EXPORT_DIR . '/admin/view-page.php';
 	}
 
 	/** Summary of a diagnostic shown on the screen (the full report is the HTML page). */
 	public static function summary( array $d ) {
 		$levels = array( 'high' => __( 'To solve', 'eclair-export' ), 'medium' => __( 'To check', 'eclair-export' ), 'info' => __( 'Good to know', 'eclair-export' ) );
-		$out    = '<div class="ee-cards">';
+		$score  = max( 0, min( 100, (int) $d['score'] ) );
+		$tone   = $score >= 85 ? 'ok' : ( $score >= 60 ? 'medium' : 'high' );
+		$verdict = $score >= 85 ? __( 'Ready to migrate', 'eclair-export' ) : ( $score >= 60 ? __( 'Migration possible, a few points to check', 'eclair-export' ) : __( 'Points to solve before migrating', 'eclair-export' ) );
+		$out    = '<div class="ee-score ee-tone-' . $tone . '"><svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="27" class="ee-ring-bg"/><circle cx="32" cy="32" r="27" class="ee-ring" stroke-dasharray="' . esc_attr( round( 169.65 * $score / 100, 1 ) ) . ' 169.65"/></svg>'
+			. '<div class="ee-score-num"><b>' . esc_html( number_format_i18n( $score ) ) . '</b><span>/100</span></div>'
+			. '<div class="ee-score-text"><strong>' . esc_html( $verdict ) . '</strong><span>' . esc_html__( 'Compatibility with Éclair: what moves as is, out of everything the site holds.', 'eclair-export' ) . '</span></div></div>';
+		$out   .= '<div class="ee-cards">';
 		$cards  = array(
-			array( number_format_i18n( $d['score'] ) . '/100', __( 'compatibility with Éclair', 'eclair-export' ) ),
 			array( number_format_i18n( $d['total_content'] ), __( 'contents', 'eclair-export' ) ),
 			array( number_format_i18n( $d['media']['count'] ), Eclair_Export_Util::size( $d['media']['bytes'] ) . ( $d['media']['complete'] ? '' : '+' ) . ' ' . __( 'of media', 'eclair-export' ) ),
 			array( Eclair_Export_Util::duration( $d['estimate']['export'] + $d['estimate']['import'] ), __( 'estimated transfer time', 'eclair-export' ) ),
@@ -124,10 +142,10 @@ final class Eclair_Export_Plugin {
 		}
 		$out .= '<ul class="ee-risks">';
 		if ( ! $d['risks'] ) {
-			$out .= '<li><span class="ee-pill ee-ok">' . esc_html__( 'None', 'eclair-export' ) . '</span> ' . esc_html__( 'Nothing blocks the migration.', 'eclair-export' ) . '</li>';
+			$out .= '<li class="ee-risk-ok"><span class="ee-pill ee-ok">' . esc_html__( 'None', 'eclair-export' ) . '</span> ' . esc_html__( 'Nothing blocks the migration.', 'eclair-export' ) . '</li>';
 		}
 		foreach ( $d['risks'] as $risk ) {
-			$out .= '<li><span class="ee-pill ee-' . esc_attr( $risk['level'] ) . '">' . esc_html( $levels[ $risk['level'] ] ) . '</span> <strong>' . esc_html( $risk['title'] ) . '</strong><br><span class="ee-muted">' . esc_html( $risk['detail'] ) . '</span></li>';
+			$out .= '<li class="ee-risk-' . esc_attr( $risk['level'] ) . '"><span class="ee-pill ee-' . esc_attr( $risk['level'] ) . '">' . esc_html( $levels[ $risk['level'] ] ) . '</span> <strong>' . esc_html( $risk['title'] ) . '</strong><br><span class="ee-muted">' . esc_html( $risk['detail'] ) . '</span></li>';
 		}
 		$out .= '</ul>';
 		/* translators: %s: date and time */
@@ -163,25 +181,59 @@ final class Eclair_Export_Plugin {
 			'types'   => isset( $_POST['types'] ) ? array_map( 'sanitize_key', (array) wp_unslash( $_POST['types'] ) ) : array(),
 			'emails'  => ! empty( $_POST['emails'] ),
 		);
+		$key = isset( $_POST['key'] ) ? sanitize_text_field( wp_unslash( $_POST['key'] ) ) : '';
 		try {
-			$job = Eclair_Export_Exporter::start( $raw );
+			Eclair_Export_Sender::cancel();
+			if ( '' !== $key ) {
+				Eclair_Export_Sender::connect( $key ); // Checked before anything is prepared: a wrong key costs nothing.
+			}
+			Eclair_Export_Exporter::start( $raw );
 		} catch ( Throwable $e ) {
+			Eclair_Export_Sender::cancel();
 			wp_send_json_error( array( 'message' => $e->getMessage() ) );
 		}
-		wp_send_json_success( self::with_links( Eclair_Export_Exporter::progress( $job ) ) );
+		wp_send_json_success( self::state() );
 	}
 
 	public static function ajax_step() {
 		self::guard();
 		session_write_close();
-		$job = Eclair_Export_Exporter::step();
-		wp_send_json_success( self::with_links( Eclair_Export_Exporter::progress( $job ) ) );
+		Eclair_Export_Exporter::step();
+		Eclair_Export_Sender::keepalive();
+		wp_send_json_success( self::state() );
+	}
+
+	/** Link key pasted once the package is ready (or to replace a key that expired). */
+	public static function ajax_connect() {
+		self::guard();
+		try {
+			Eclair_Export_Sender::connect( isset( $_POST['key'] ) ? sanitize_text_field( wp_unslash( $_POST['key'] ) ) : '' );
+		} catch ( Throwable $e ) {
+			wp_send_json_error( array( 'message' => $e->getMessage() ) );
+		}
+		wp_send_json_success( self::state() );
+	}
+
+	/** Next pieces of the package sent to the Éclair site. */
+	public static function ajax_send() {
+		self::guard();
+		session_write_close();
+		Eclair_Export_Sender::step();
+		wp_send_json_success( self::state() );
+	}
+
+	/** Export and transfer as shown on the screen. The link key never leaves the server. */
+	public static function state() {
+		$state         = self::with_links( Eclair_Export_Exporter::progress( Eclair_Export_Exporter::job() ) );
+		$state['send'] = Eclair_Export_Sender::progress( Eclair_Export_Sender::state() );
+		return $state;
 	}
 
 	public static function ajax_cancel() {
 		self::guard();
+		Eclair_Export_Sender::cancel();
 		Eclair_Export_Exporter::cancel();
-		wp_send_json_success( Eclair_Export_Exporter::progress( null ) );
+		wp_send_json_success( self::state() );
 	}
 
 	public static function ajax_branding() {

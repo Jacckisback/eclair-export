@@ -70,6 +70,18 @@ final class Eclair_Export_Diagnostic {
 		$d['total_content'] = array_sum( wp_list_pluck( $d['content'], 'total' ) );
 		$d['protected']     = (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->posts} WHERE post_type IN ($in_types) AND post_status IN ($in_stat) AND post_password <> ''", $args ) ); // phpcs:ignore WordPress.DB
 
+		// SEO: what the migration is a good time to fix (never blocking).
+		$seo_source = Eclair_Export_Seo::source();
+		$meta_key   = 'yoast' === $seo_source ? '_yoast_wpseo_metadesc' : ( 'rankmath' === $seo_source ? 'rank_math_description' : '' );
+		$published  = (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->posts} WHERE post_type IN ($in_types) AND post_status = 'publish'", $type_names ) ); // phpcs:ignore WordPress.DB
+		$d['seo']   = array(
+			'source'         => $seo_source,
+			'published'      => $published,
+			'images'         => (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->posts} WHERE post_type = 'attachment' AND post_mime_type LIKE 'image/%'" ), // phpcs:ignore WordPress.DB
+			'images_alt'     => (int) $wpdb->get_var( "SELECT COUNT(DISTINCT p.ID) FROM {$wpdb->posts} p INNER JOIN {$wpdb->postmeta} m ON m.post_id = p.ID AND m.meta_key = '_wp_attachment_image_alt' AND m.meta_value <> '' WHERE p.post_type = 'attachment' AND p.post_mime_type LIKE 'image/%'" ), // phpcs:ignore WordPress.DB
+			'descriptions'   => '' === $meta_key ? -1 : (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(DISTINCT p.ID) FROM {$wpdb->posts} p INNER JOIN {$wpdb->postmeta} m ON m.post_id = p.ID AND m.meta_key = %s AND m.meta_value <> '' WHERE p.post_type IN ($in_types) AND p.post_status = 'publish'", array_merge( array( $meta_key ), $type_names ) ) ), // phpcs:ignore WordPress.DB
+		);
+
 		// Terms.
 		$d['terms'] = array();
 		foreach ( get_object_taxonomies( $type_names, 'objects' ) as $taxonomy ) {
@@ -306,6 +318,18 @@ final class Eclair_Export_Diagnostic {
 		if ( $d['protected'] > 0 ) {
 			/* translators: %s: number of contents */
 			$add( 'info', __( 'Password-protected contents', 'eclair-export' ), sprintf( __( '%s contents: they are imported as drafts (their password is not exported).', 'eclair-export' ), $n( $d['protected'] ) ) );
+		}
+		if ( isset( $d['seo'] ) ) {
+			$no_alt = max( 0, $d['seo']['images'] - $d['seo']['images_alt'] );
+			if ( $no_alt > 0 ) {
+				/* translators: 1: images without alternative text, 2: number of images */
+				$add( 'info', __( 'SEO: images without alternative text', 'eclair-export' ), sprintf( __( '%1$s of %2$s images have none. They are imported as they are; writing it (in WordPress before the export, or in Éclair after) helps Google Images, accessibility and AI answers.', 'eclair-export' ), $n( $no_alt ), $n( $d['seo']['images'] ) ) );
+			}
+			$no_desc = $d['seo']['descriptions'] < 0 ? 0 : max( 0, $d['seo']['published'] - $d['seo']['descriptions'] );
+			if ( $no_desc > 0 ) {
+				/* translators: 1: contents without meta description, 2: number of published contents */
+				$add( 'info', __( 'SEO: contents without meta description', 'eclair-export' ), sprintf( __( '%1$s of %2$s published contents have none: search engines pick an extract themselves. The ones you wrote are exported as they are; write the missing ones for your key pages.', 'eclair-export' ), $n( $no_desc ), $n( $d['seo']['published'] ) ) );
+			}
 		}
 		if ( $d['site']['multisite'] ) {
 			$add( 'info', __( 'Multisite network', 'eclair-export' ), __( 'Only this site of the network is exported.', 'eclair-export' ) );

@@ -8,7 +8,7 @@ define( 'ABSPATH', __DIR__ . '/' );
 define( 'DAY_IN_SECONDS', 86400 );
 define( 'HOUR_IN_SECONDS', 3600 );
 define( 'ECLAIR_EXPORT_VERSION', 'test' );
-define( 'ECLAIR_EXPORT_FORMAT', '1.0' );
+define( 'ECLAIR_EXPORT_FORMAT', '1.1' );
 
 $GLOBALS['test_home'] = 'https://www.example.com';
 
@@ -23,6 +23,8 @@ function wp_parse_url( $url, $component = -1 ) { return parse_url( $url, $compon
 function number_format_i18n( $n, $d = 0 ) { return number_format( (float) $n, $d ); }
 function size_format( $bytes, $d = 0 ) { return round( $bytes / 1048576, $d ) . ' MB'; }
 function get_bloginfo() { return 'Site'; }
+function esc_url_raw( $url, $protocols = null ) { return preg_match( '~^(' . implode( '|', $protocols ? $protocols : array( 'http', 'https' ) ) . ')://[^\s<>"\']+$~i', (string) $url ) ? (string) $url : ''; }
+function apply_filters( $tag, $value ) { return isset( $GLOBALS['test_filters'][ $tag ] ) ? $GLOBALS['test_filters'][ $tag ] : $value; }
 function wpautop( $t ) {
 	$paras = preg_split( '~\n\s*\n~', trim( (string) $t ) );
 	return implode( "\n", array_map( static function ( $p ) {
@@ -35,6 +37,7 @@ require dirname( __DIR__ ) . '/includes/class-eclair-export-shortcodes.php';
 require dirname( __DIR__ ) . '/includes/class-eclair-export-converter.php';
 require dirname( __DIR__ ) . '/includes/class-eclair-export-redirects.php';
 require dirname( __DIR__ ) . '/includes/class-eclair-export-seo.php';
+require dirname( __DIR__ ) . '/includes/class-eclair-export-sender.php';
 
 $GLOBALS['passed'] = 0;
 $GLOBALS['failed'] = array();

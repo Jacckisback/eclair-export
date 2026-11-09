@@ -125,4 +125,21 @@ if ( empty( $q["_wpnonce"] ) || ! wp_verify_nonce( $q["_wpnonce"], Eclair_Export
 if ( "eclair_export_download" !== $q["action"] || "eclair-export-site-20260101-000000-abcdef.zip" !== $q["file"] ) { echo "FAIL: download URL arguments: $url\n"; exit( 1 ); }
 echo "Download link OK\n";
 '
+# Abilities API (WordPress 6.9+): the diagnostic and the migration are offered to AI assistants (MCP adapter), admins only.
+$WP eval --user=admin '
+if ( ! function_exists( "wp_get_ability" ) ) { echo "Abilities API absent from this WordPress: skipped\n"; return; }
+$a = wp_get_ability( "eclair-export/diagnose" );
+$m = wp_get_ability( "eclair-export/migrate" );
+if ( ! $a || ! $m ) { echo "FAIL: abilities not registered\n"; exit( 1 ); }
+$r = $a->execute();
+if ( is_wp_error( $r ) || empty( $r["compatibility"] ) || empty( $r["contents"] ) || ! isset( $r["points"] ) ) { echo "FAIL: diagnose ability: " . ( is_wp_error( $r ) ? $r->get_error_message() : wp_json_encode( $r ) ) . "\n"; exit( 1 ); }
+$bad = $m->execute( array( "link_key" => "not-a-key" ) );
+if ( ! is_wp_error( $bad ) || Eclair_Export_Exporter::job() ) { echo "FAIL: migrate ability accepted a wrong key or started an export\n"; exit( 1 ); }
+wp_set_current_user( 0 );
+if ( true === $a->check_permissions() ) { echo "FAIL: diagnose ability open to visitors\n"; exit( 1 ); }
+echo "Abilities OK (compatibility " . $r["compatibility"] . "/100)\n";
+'
+# A wrong link key is refused before anything is exported; a key for a site that does not answer says so.
+if $WP eclair export --send=not-a-key 2>"$OUT/send.err"; then echo "FAIL: wrong link key accepted"; exit 1; fi
+grep -q "link key" "$OUT/send.err" || { echo "FAIL: wrong key message"; cat "$OUT/send.err"; exit 1; }
 echo "Integration test passed."

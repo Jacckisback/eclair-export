@@ -1,4 +1,4 @@
-# Format du paquet `eclair-export` 1.0
+# Format du paquet `eclair-export` 1.1
 
 Un export est un ou plusieurs fichiers ZIP. La **partie 1** (`eclair-export-<site>-<date>-<aléatoire>.zip`) contient toujours `manifest.json` et toutes les données ; les parties suivantes (`…-part2.zip`, `…-part3.zip`) ne contiennent que des fichiers de `media/uploads/` et un `part.json`. Tous les textes sont en UTF-8, toutes les dates en ISO 8601 UTC.
 
@@ -25,7 +25,7 @@ part.json              (parties 2 et suivantes) numéro de la partie et identifi
 
 | Clé | Contenu |
 |---|---|
-| `format`, `format_version` | `"eclair-export"`, `"1.0"`. Une version mineure n'ajoute que des clés ; une version majeure peut en changer. |
+| `format`, `format_version` | `"eclair-export"`, `"1.1"` (1.1 : `seo.json` → `global.social`). Une version mineure n'ajoute que des clés ; une version majeure peut en changer. |
 | `generator` | `{name, version}` de l'extension. |
 | `package` | Nom de base des fichiers ZIP (identifie les parties d'un même export). |
 | `created_at` | Date de l'export. |
@@ -83,7 +83,8 @@ Balises gardées : `p br hr strong b em i u s del ins sub sup mark small abbr co
 ## seo.json
 
 ```json
-{"global": {"source": "yoast", "search_engines_discouraged": false, "separator": "-", "organization": {"name": "", "logo": ""}, "robots_txt": "", "verification": {"google": "…"}},
+{"global": {"source": "yoast", "search_engines_discouraged": false, "separator": "-", "organization": {"name": "", "logo": ""}, "robots_txt": "", "verification": {"google": "…"},
+            "social": {"twitter": "compte", "image": "https://…/partage.jpg", "profiles": ["https://www.facebook.com/…"]}},
  "posts": {"123": {"title": "", "description": "", "keyword": "", "canonical": "", "noindex": false, "nofollow": false,
                    "og": {"title": "", "description": "", "image": ""}, "twitter": {"title": "", "description": "", "image": ""}, "schema": "", "source": "yoast"}},
  "terms": {"category:5": { …même forme… }}}

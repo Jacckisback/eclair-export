@@ -52,6 +52,8 @@
 			post( 'diagnose' ).then( function ( data ) {
 				result.innerHTML = data.html;
 				$( '#ee-report' ).hidden = false;
+				cfg.diagnosed = true;
+				stepper();
 			} ).catch( function ( e ) {
 				result.innerHTML = '<p class="ee-error">' + e.message + '</p>';
 			} ).then( function () {
@@ -78,29 +80,81 @@
 		} );
 	}
 
-	/* ------------------------------------------------ Export */
+	/* ------------------------------------------------ Migration: export, then transfer */
 	var form = $( '#ee-export-form' );
 	var box = $( '#ee-progress' );
-	var bar = $( '.ee-bar', box );
-	var label = $( '.ee-progress-label', box );
-	var errorBox = $( '.ee-error', box );
+	var trackExport = $( '#ee-track-export' );
+	var trackSend = $( '#ee-track-send' );
+	var errorBox = $( '#ee-run-error' );
+	var startError = $( '#ee-start-error' );
 	var resumeBtn = $( '#ee-resume' );
+	var cancelBtn = $( '#ee-cancel' );
+	var downloads = $( '#ee-downloads' );
+	var delivered = $( '#ee-delivered' );
+	var keyInput = $( '#ee-key' );
 	var running = false;
 	var failures = 0;
+	var last = cfg.progress || { status: 'none', send: { status: 'none' } };
+
+	function stepper() {
+		var done = last.send && last.send.status === 'done';
+		var stage = done ? 'eclair' : ( cfg.diagnosed || last.status !== 'none' ? 'migration' : 'diagnostic' );
+		var order = [ 'diagnostic', 'migration', 'eclair' ];
+		Array.prototype.forEach.call( document.querySelectorAll( '.ee-stepper li' ), function ( li ) {
+			var at = order.indexOf( li.getAttribute( 'data-ee-stage' ) );
+			li.classList.toggle( 'is-done', at < order.indexOf( stage ) );
+			li.classList.toggle( 'is-current', at === order.indexOf( stage ) );
+		} );
+	}
+
+	function track( el, percent, text, done ) {
+		var bar = $( '.ee-bar', el );
+		bar.querySelector( 'span' ).style.width = percent + '%';
+		bar.setAttribute( 'aria-valuenow', percent );
+		$( '.ee-progress-label', el ).textContent = percent + ' % · ' + ( text || '' );
+		el.classList.toggle( 'is-done', !! done );
+	}
+
+	/** What to ask the server next: a step of the export, pieces of the transfer, or nothing. */
+	function nextAction( p ) {
+		var send = p.send || { status: 'none' };
+		if ( p.status === 'running' ) {
+			return 'step';
+		}
+		if ( p.status === 'done' && ( send.status === 'waiting' || send.status === 'running' ) ) {
+			return 'send';
+		}
+		return null;
+	}
 
 	function show( p ) {
-		bar.querySelector( 'span' ).style.width = ( p.percent || 0 ) + '%';
-		bar.setAttribute( 'aria-valuenow', p.percent || 0 );
-		label.textContent = ( p.percent || 0 ) + ' % · ' + ( p.label || '' );
-		errorBox.hidden = ! p.error;
-		errorBox.textContent = p.error || '';
-		if ( p.status === 'done' ) {
-			var list = $( '#ee-downloads ul' );
+		last = p;
+		var send = p.send || { status: 'none' };
+		var arrived = send.status === 'done';
+		var exported = p.status === 'done' || arrived;
+		track( trackExport, exported ? 100 : ( p.percent || 0 ), arrived ? '' : p.label, exported );
+		trackSend.hidden = send.status === 'none';
+		if ( send.status !== 'none' ) {
+			track( trackSend, send.percent || 0, send.label, arrived );
+		}
+		var error = p.error || send.error || '';
+		errorBox.hidden = ! error;
+		errorBox.textContent = error;
+		delivered.hidden = ! arrived;
+		downloads.hidden = ! ( p.status === 'done' && send.status === 'none' );
+		cancelBtn.hidden = arrived || ! downloads.hidden;
+		resumeBtn.hidden = ! ( p.status === 'error' || send.status === 'error' );
+		if ( arrived ) {
+			$( '#ee-delivered-label' ).textContent = send.label;
+			$( '#ee-open-eclair' ).href = send.url;
+		}
+		if ( ! downloads.hidden ) {
+			var list = $( 'ul', downloads );
 			list.innerHTML = '';
 			( p.parts || [] ).forEach( function ( part, i ) {
 				var li = document.createElement( 'li' );
 				var a = document.createElement( 'a' );
-				a.className = 'button button-primary';
+				a.className = 'button';
 				a.href = part.url;
 				a.textContent = t.download + ( p.parts.length > 1 ? ' · ' + t.part.replace( '%d', i + 1 ) : '' ) + ' (' + part.human + ')';
 				a.addEventListener( 'click', function () {
@@ -111,37 +165,30 @@
 				li.appendChild( a );
 				list.appendChild( li );
 			} );
-			$( '#ee-downloads' ).hidden = false;
-			$( '#ee-cancel' ).hidden = true;
-			resumeBtn.hidden = true;
 		}
-		if ( p.status === 'error' ) {
-			resumeBtn.hidden = false;
-		}
+		stepper();
 	}
 
 	function loop() {
-		if ( ! running ) {
+		var action = running ? nextAction( last ) : null;
+		if ( ! action ) {
+			running = false;
 			return;
 		}
-		post( 'step' ).then( function ( p ) {
+		post( action ).then( function ( p ) {
 			failures = 0;
 			show( p );
-			if ( p.status === 'running' ) {
-				setTimeout( loop, 150 );
-			} else {
-				running = false;
-			}
+			setTimeout( loop, 150 );
 		} ).catch( function ( e ) {
 			failures++;
 			if ( e.fatal || failures > 6 ) {
 				running = false;
 				errorBox.hidden = false;
-				errorBox.textContent = e.message + ' ' + t.paused;
+				errorBox.textContent = e.message + ' ' + ( action === 'send' ? t.sendpause : t.paused );
 				resumeBtn.hidden = false;
 				return;
 			}
-			label.textContent = t.retry;
+			$( '.ee-progress-label', action === 'send' ? trackSend : trackExport ).textContent = t.retry;
 			setTimeout( loop, Math.min( 30000, 2000 * Math.pow( 2, failures - 1 ) ) );
 		} );
 	}
@@ -153,15 +200,33 @@
 		loop();
 	}
 
+	function reset() {
+		running = false;
+		last = { status: 'none', send: { status: 'none' } };
+		box.hidden = true;
+		form.hidden = false;
+		stepper();
+	}
+
 	if ( form ) {
+		var startBtn = form.querySelector( 'button[type="submit"]' );
+		var relabel = function () {
+			startBtn.textContent = keyInput.value.trim() ? t.start : t.startonly;
+		};
+		keyInput.addEventListener( 'input', relabel );
+		relabel();
 		form.addEventListener( 'submit', function ( ev ) {
 			ev.preventDefault();
 			var types = Array.prototype.map.call( form.querySelectorAll( 'input[name="types[]"]:checked' ), function ( el ) {
 				return el.value;
 			} );
-			var button = form.querySelector( 'button[type="submit"]' );
-			button.disabled = true;
+			startBtn.disabled = true;
+			startError.hidden = true;
+			if ( keyInput.value.trim() ) {
+				startBtn.textContent = t.checking;
+			}
 			post( 'start', {
+				key: keyInput.value.trim(),
 				types: types,
 				media: form.querySelector( 'input[name="media"]:checked' ).value,
 				part_mb: form.querySelector( 'select[name="part_mb"]' ).value,
@@ -169,56 +234,76 @@
 			} ).then( function ( p ) {
 				form.hidden = true;
 				box.hidden = false;
-				$( '#ee-downloads' ).hidden = true;
-				$( '#ee-cancel' ).hidden = false;
+				keyInput.value = '';
 				show( p );
 				startLoop();
 			} ).catch( function ( e ) {
-				window.alert( e.message );
+				startError.hidden = false;
+				startError.textContent = e.message;
 			} ).then( function () {
-				button.disabled = false;
+				startBtn.disabled = false;
+				relabel();
 			} );
 		} );
 	}
 
-	resumeBtn.addEventListener( 'click', function () {
-		post( 'step' ).catch( function () {} ).then( startLoop );
+	// Package ready without a key: it can still be sent instead of downloaded.
+	$( '#ee-send-form' ).addEventListener( 'submit', function ( ev ) {
+		ev.preventDefault();
+		var input = $( '#ee-key-2' );
+		var button = ev.target.querySelector( 'button' );
+		button.disabled = true;
+		errorBox.hidden = true;
+		post( 'connect', { key: input.value.trim() } ).then( function ( p ) {
+			input.value = '';
+			show( p );
+			startLoop();
+		} ).catch( function ( e ) {
+			errorBox.hidden = false;
+			errorBox.textContent = e.message;
+		} ).then( function () {
+			button.disabled = false;
+		} );
 	} );
 
-	$( '#ee-cancel' ).addEventListener( 'click', function () {
+	resumeBtn.addEventListener( 'click', function () {
+		var send = last.send || { status: 'none' };
+		post( last.status === 'done' && send.status !== 'none' ? 'send' : 'step' ).then( show ).catch( function () {} ).then( startLoop );
+	} );
+
+	cancelBtn.addEventListener( 'click', function () {
 		if ( ! window.confirm( t.confirm ) ) {
 			return;
 		}
 		running = false;
-		post( 'cancel' ).then( function () {
-			box.hidden = true;
-			form.hidden = false;
-		} );
+		post( 'cancel' ).then( reset );
 	} );
 
-	$( '#ee-new' ).addEventListener( 'click', function () {
-		post( 'cancel' ).then( function () {
-			box.hidden = true;
-			form.hidden = false;
+	[ '#ee-new', '#ee-new-2' ].forEach( function ( id ) {
+		$( id ).addEventListener( 'click', function () {
+			post( 'cancel' ).then( reset );
 		} );
 	} );
 
 	window.addEventListener( 'beforeunload', function ( ev ) {
 		if ( running ) {
+			var text = nextAction( last ) === 'send' ? t.sendleave : t.leave;
 			ev.preventDefault();
-			ev.returnValue = t.leave;
-			return t.leave;
+			ev.returnValue = text;
+			return text;
 		}
 	} );
 
-	// An export already under way when the page opens: shown, and resumed.
-	if ( cfg.progress && cfg.progress.status && cfg.progress.status !== 'none' ) {
+	// A migration already under way when the page opens: shown, and resumed on request.
+	if ( last.status !== 'none' || ( last.send && last.send.status !== 'none' ) ) {
+		form.hidden = true;
 		box.hidden = false;
-		show( cfg.progress );
-		if ( cfg.progress.status === 'running' ) {
+		show( last );
+		if ( nextAction( last ) ) {
 			resumeBtn.hidden = false;
 			errorBox.hidden = false;
-			errorBox.textContent = t.paused;
+			errorBox.textContent = nextAction( last ) === 'send' ? t.sendpause : t.paused;
 		}
 	}
+	stepper();
 }() );

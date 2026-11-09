@@ -24,6 +24,22 @@ A WordPress plugin that diagnoses the site, then exports it as a complete packag
 
 Full package format: [docs/FORMAT.md](docs/FORMAT.md) (in French).
 
+## Migration in one transfer (1.1)
+
+1. In Éclair: **Administration › Import WordPress › Create a link key**. Copy the key.
+2. In WordPress: **Tools › Export to Éclair**, paste the key, click **Start the migration**.
+3. The package is prepared, then sent to the Éclair site in pieces, whatever its size. A cut loses nothing: the transfer resumes.
+4. In Éclair: **Simulate**, then **Import**, then open the migration report.
+
+The key only allows the package to be dropped on the Éclair site, lasts two hours and serves once. Without a key, the package is downloaded as before.
+
+Command line: `wp eclair export --send=<key>`.
+
+### With Claude or ChatGPT
+
+- **On WordPress 6.9+**: the plugin registers two abilities, `eclair-export/diagnose` (read only) and `eclair-export/migrate` (export, then transfer with a link key). With the WordPress MCP adapter, an assistant can diagnose the site and start the migration. Administrators only.
+- **On Éclair**: enable the MCP connector (Settings › AI) and ask "finish my WordPress migration": the assistant reads the import summary (`get_migration` tool) and proposes the fixes content by content. Nothing is published without your approval.
+
 ## On the Éclair side: import and client report
 
 In Éclair CMS (the **WordPress import** feature shipped with Éclair):

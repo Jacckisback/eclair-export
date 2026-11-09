@@ -97,10 +97,15 @@ final class Eclair_Export_CLI {
 	 * [--output=<dir>]
 	 * : Folder where the archive is written (default: current folder).
 	 *
+	 * [--send=<key>]
+	 * : Sends the package straight to the Éclair site instead of writing files: the link key created there
+	 * (Import WordPress › Create a link key).
+	 *
 	 * ## EXAMPLES
 	 *
 	 *     wp eclair export --output=/backups/migrations/
 	 *     wp eclair export --media=remote --types=post,page
+	 *     wp eclair export --send=eclair1.aHR0cHM6Ly9leGFtcGxlLm9yZw.0123…
 	 *
 	 * @when after_wp_load
 	 */
@@ -120,7 +125,12 @@ final class Eclair_Export_CLI {
 		if ( ! empty( $assoc['types'] ) ) {
 			$options['types'] = array_map( 'trim', explode( ',', $assoc['types'] ) );
 		}
+		$send = isset( $assoc['send'] ) ? (string) $assoc['send'] : '';
 		try {
+			Eclair_Export_Sender::cancel();
+			if ( '' !== $send ) {
+				Eclair_Export_Sender::connect( $send ); // Checked before the export: a wrong key costs nothing.
+			}
 			$job = Eclair_Export_Exporter::start( $options );
 		} catch ( Throwable $e ) {
 			WP_CLI::error( $e->getMessage() );
@@ -144,6 +154,32 @@ final class Eclair_Export_CLI {
 			Eclair_Export_Exporter::cancel();
 			WP_CLI::error( 'Export failed: ' . $message );
 		}
+		if ( '' !== $send ) {
+			$this->warnings( $job );
+			$bar   = WP_CLI\Utils\make_progress_bar( 'Transfer', 100 );
+			$last  = 0;
+			$tries = 0;
+			do {
+				$state    = Eclair_Export_Sender::step( 30 );
+				$progress = Eclair_Export_Sender::progress( $state );
+				if ( $progress['percent'] > $last ) {
+					$bar->tick( $progress['percent'] - $last );
+					$last  = $progress['percent'];
+					$tries = 0;
+				}
+				if ( 'error' === $progress['status'] ) {
+					WP_CLI::warning( $progress['error'] );
+					sleep( min( 60, 5 * ++$tries ) );
+				}
+			} while ( 'done' !== $progress['status'] && $tries < 5 );
+			$bar->finish();
+			if ( 'done' !== $progress['status'] ) {
+				WP_CLI::error( 'Transfer stopped. The package is kept for 24 hours: run "wp eclair send <key>" to resume.' );
+			}
+			Eclair_Export_Sender::cancel();
+			WP_CLI::success( $progress['label'] . ' Open Éclair › Import WordPress to simulate, then import.' );
+			return;
+		}
 		$dir   = Eclair_Export_Storage::job_dir( $job['id'] );
 		$files = array();
 		foreach ( $job['parts'] as $part ) {
@@ -153,20 +189,60 @@ final class Eclair_Export_CLI {
 			}
 			$files[] = $target . ' (' . Eclair_Export_Util::size( filesize( $target ) ) . ')';
 		}
-		$report = $job['report'];
 		Eclair_Export_Exporter::cancel();
 		foreach ( $files as $file ) {
 			WP_CLI::log( $file );
 		}
+		$this->warnings( $job );
+		WP_CLI::success( 'Package ready.' );
+	}
+
+	/**
+	 * Sends the package of the last export to the Éclair site, or resumes a transfer that stopped.
+	 *
+	 * ## OPTIONS
+	 *
+	 * <key>
+	 * : Link key created on the Éclair site (Import WordPress › Create a link key).
+	 *
+	 * @when after_wp_load
+	 */
+	public function send( $args, $assoc ) {
+		$job = Eclair_Export_Exporter::job();
+		if ( ! $job || 'done' !== $job['status'] ) {
+			WP_CLI::error( 'No finished export on this site: run "wp eclair export --send=<key>".' );
+		}
+		try {
+			Eclair_Export_Sender::connect( isset( $args[0] ) ? $args[0] : '' );
+		} catch ( Throwable $e ) {
+			WP_CLI::error( $e->getMessage() );
+		}
+		$tries = 0;
+		do {
+			$progress = Eclair_Export_Sender::progress( Eclair_Export_Sender::step( 30 ) );
+			WP_CLI::log( $progress['percent'] . ' % · ' . $progress['label'] );
+			if ( 'error' === $progress['status'] ) {
+				WP_CLI::warning( $progress['error'] );
+				sleep( min( 60, 5 * ++$tries ) );
+			}
+		} while ( 'done' !== $progress['status'] && $tries < 5 );
+		if ( 'done' !== $progress['status'] ) {
+			WP_CLI::error( 'Transfer stopped.' );
+		}
+		Eclair_Export_Sender::cancel();
+		WP_CLI::success( 'Open Éclair › Import WordPress to simulate, then import.' );
+	}
+
+	/** What the export could not convert, for the person who runs the command. */
+	private function warnings( array $job ) {
 		$counts = $job['counts'];
 		WP_CLI::log( sprintf( '%d terms · %d authors · %d media · %d redirections', isset( $counts['terms'] ) ? $counts['terms'] : 0, isset( $counts['authors'] ) ? $counts['authors'] : 0, isset( $counts['media'] ) ? $counts['media'] : 0, isset( $counts['redirects'] ) ? $counts['redirects'] : 0 ) );
-		foreach ( $report['shortcodes'] as $tag => $row ) {
+		foreach ( $job['report']['shortcodes'] as $tag => $row ) {
 			WP_CLI::warning( sprintf( 'Shortcode [%s] kept as text: %d uses in %d contents.', $tag, $row['count'], $row['contents'] ) );
 		}
-		foreach ( $report['errors'] as $error ) {
+		foreach ( $job['report']['errors'] as $error ) {
 			WP_CLI::warning( $error );
 		}
-		WP_CLI::success( 'Package ready.' );
 	}
 
 	/**
@@ -175,6 +251,7 @@ final class Eclair_Export_CLI {
 	 * @when after_wp_load
 	 */
 	public function cleanup( $args, $assoc ) {
+		Eclair_Export_Sender::cancel();
 		Eclair_Export_Exporter::cancel();
 		$n = Eclair_Export_Storage::cleanup( 0 );
 		WP_CLI::success( sprintf( '%d export folder(s) deleted.', $n ) );

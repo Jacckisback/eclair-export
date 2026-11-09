@@ -2,6 +2,7 @@
 /**
  * Pilote d'un site Éclair de test par HTTP, comme un administrateur :
  *   php tests/e2e/eclair.php install <url> <dossier de sortie>   installation, connexion, fonction « Import WordPress » ajoutée
+ *   php tests/e2e/eclair.php link    <url> <dossier de sortie>   crée une clé de liaison et l'affiche (envoi direct depuis WordPress)
  *   php tests/e2e/eclair.php report  <url> <dossier de sortie>   rapport de migration (fr, es) et page d'import enregistrés
  */
 
@@ -60,4 +61,16 @@ if ( 'report' === $cmd ) {
 	exit( 0 );
 }
 
-$fail( 'Usage : php tests/e2e/eclair.php install|report <url> <dossier>' );
+if ( 'link' === $cmd ) {
+	// Clé de liaison créée comme le ferait la personne : Import WordPress › Créer une clé de liaison.
+	$page = $req( 'GET', '/gestion/x/wordpress' );
+	$req( 'POST', '/gestion/x/wordpress', $token( $page['body'] ) + array( 'action' => 'link' ) );
+	$page = $req( 'GET', '/gestion/x/wordpress' );
+	if ( ! preg_match( '~value="(eclair1\.[A-Za-z0-9_-]+\.[a-f0-9]{40})"~', $page['body'], $m ) ) {
+		$fail( 'Clé de liaison introuvable sur la page Import WordPress' );
+	}
+	echo $m[1];
+	exit( 0 );
+}
+
+$fail( 'Usage : php tests/e2e/eclair.php install|link|report <url> <dossier>' );

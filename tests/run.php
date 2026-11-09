@@ -189,6 +189,34 @@ $plugin_src = file_get_contents( dirname( __DIR__ ) . '/includes/class-eclair-ex
 check( 'download links: no wp_nonce_url() in the JSON links', ! preg_match( '~=\s*wp_nonce_url\s*\(~', $plugin_src ) );
 check( 'download links: built with add_query_arg()', false !== strpos( $plugin_src, "'_wpnonce' => wp_create_nonce( self::NONCE )" ) );
 
+/* ------------------------------------------------------------ Link key of the direct transfer (1.1.0) */
+
+$b64  = static function ( $url ) {
+	return rtrim( strtr( base64_encode( $url ), '+/', '-_' ), '=' );
+};
+$code = str_repeat( 'a1', 20 );
+same( 'link key: address and code read', array( 'https://www.mon-site.fr', $code ), Eclair_Export_Sender::parse( 'eclair1.' . $b64( 'https://www.mon-site.fr' ) . '.' . $code ) );
+same( 'link key: spaces and line breaks of a copy-paste ignored, site in a subfolder kept', array( 'https://exemple.fr/blog', $code ), Eclair_Export_Sender::parse( "  eclair1." . $b64( 'https://exemple.fr/blog/' ) . ".\n" . $code . ' ' ) );
+same( 'link key: http refused (the package would travel in clear)', null, Eclair_Export_Sender::parse( 'eclair1.' . $b64( 'http://www.mon-site.fr' ) . '.' . $code ) );
+$GLOBALS['test_filters']['eclair_export_allow_http'] = true;
+same( 'link key: http allowed for a local test site only through the filter', array( 'http://127.0.0.1:8090', $code ), Eclair_Export_Sender::parse( 'eclair1.' . $b64( 'http://127.0.0.1:8090' ) . '.' . $code ) );
+unset( $GLOBALS['test_filters'] );
+foreach ( array(
+	'empty'                 => '',
+	'not a key'             => 'bonjour',
+	'short code'            => 'eclair1.' . $b64( 'https://a.fr' ) . '.abc',
+	'other scheme'          => 'eclair1.' . $b64( 'ftp://a.fr' ) . '.' . $code,
+	'javascript'            => 'eclair1.' . $b64( 'javascript:alert(1)' ) . '.' . $code,
+	'query string'          => 'eclair1.' . $b64( 'https://a.fr/?x=1' ) . '.' . $code,
+	'address with a space'  => 'eclair1.' . $b64( 'https://a.fr/ b' ) . '.' . $code,
+	'not base64'            => 'eclair1.$$$$$$$$$$.' . $code,
+) as $label => $key ) {
+	same( 'link key refused: ' . $label, null, Eclair_Export_Sender::parse( $key ) );
+}
+$sender_src = file_get_contents( dirname( __DIR__ ) . '/includes/class-eclair-export-sender.php' );
+check( 'transfer: requests go through wp_safe_remote_post (no private address), never follow a redirect', false !== strpos( $sender_src, 'wp_safe_remote_post(' ) && false !== strpos( $sender_src, "'redirection' => 0" ) && ! preg_match( '~wp_remote_(post|get|request)\s*\(~', $sender_src ) );
+check( 'transfer: the screen never receives the code of the key', ! preg_match( "~'code'\s*=>~", substr( $sender_src, strpos( $sender_src, 'public static function progress' ) ) ) );
+
 /* ------------------------------------------------------------ Result */
 
 echo $GLOBALS['passed'] . " checks passed\n";

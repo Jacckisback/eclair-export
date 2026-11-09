@@ -40,12 +40,6 @@ step "Contenus de test"
 $WP eval-file "$PLUGIN_DIR/tests/e2e/seed.php"
 $WP rewrite flush --quiet
 
-step "Diagnostic et export (Eclair Export)"
-$WP eclair diagnose
-$WP eclair diagnose --format=json --output="$OUT/diagnostic.json"
-$WP eclair diagnose --format=html --locale=fr_FR --output="$OUT/diagnostic-fr.html"
-$WP eclair export --output="$OUT/package" --part-size=50
-
 step "Éclair ($ECLAIR_BRANCH)"
 git clone --quiet --depth 1 --branch "$ECLAIR_BRANCH" "$ECLAIR_REPO" "$WORK/eclair-cms"
 cp -r "$WORK/eclair-cms/eclair" "$SITE"
@@ -55,8 +49,40 @@ trap 'kill $SERVER 2>/dev/null || true' EXIT
 sleep 1
 php "$PLUGIN_DIR/tests/e2e/eclair.php" install "http://127.0.0.1:$PORT" "$OUT"
 
-step "Import du paquet (ligne de commande)"
-php "$SITE/app/bundled/wordpress/lib/cli.php" import "$OUT"/package/*.zip --no-remote --json > "$OUT/import.json"
+step "Diagnostic (Eclair Export)"
+$WP eclair diagnose
+$WP eclair diagnose --format=json --output="$OUT/diagnostic.json"
+$WP eclair diagnose --format=html --locale=fr_FR --output="$OUT/diagnostic-fr.html"
+
+PARTS="$SITE/data/ext/wordpress/package/parts"
+if [ -f "$SITE/app/bundled/wordpress/lib/Receiver.php" ]; then
+	step "Export et envoi direct vers Éclair (clé de liaison)"
+	# Site Éclair de test en http sur un port local : permis ici seulement (en production : https, hôte public).
+	mkdir -p "$WP_DIR/wp-content/mu-plugins"
+	cat > "$WP_DIR/wp-content/mu-plugins/e2e-local.php" <<PHP
+<?php
+add_filter( 'eclair_export_allow_http', '__return_true' );
+add_filter( 'http_request_host_is_external', '__return_true' );
+add_filter( 'http_allowed_safe_ports', static function ( \$ports ) { \$ports[] = $PORT; return \$ports; } );
+PHP
+	KEY="$(php "$PLUGIN_DIR/tests/e2e/eclair.php" link "http://127.0.0.1:$PORT" "$OUT")"
+	$WP eclair export --send="$KEY" --part-size=50
+	ls "$PARTS"/eclair-export-*.zip > /dev/null || { echo "✗ aucune archive arrivée dans Éclair"; exit 1; }
+	if ls "$PARTS"/*.part > /dev/null 2>&1; then echo "✗ archive incomplète laissée dans Éclair"; exit 1; fi
+	if [ -f "$SITE/data/ext/wordpress/link.php" ]; then echo "✗ la clé de liaison n'a pas été retirée après l'envoi"; exit 1; fi
+	if $WP eval 'exit( Eclair_Export_Exporter::job() || get_option( "eclair_export_send" ) ? 0 : 1 );'; then echo "✗ paquet ou clé gardés sur WordPress après l'envoi"; exit 1; fi
+	echo "  ✓ $(ls "$PARTS"/*.zip | wc -l) archive(s) arrivée(s) dans Éclair ($(du -ch "$PARTS"/*.zip | tail -1 | cut -f1)), clé retirée, rien gardé sur WordPress"
+	cp "$PARTS"/*.zip "$OUT/package/"
+	echo "direct" > "$OUT/transfer.txt"
+	step "Import du paquet reçu (ligne de commande)"
+	php "$SITE/app/bundled/wordpress/lib/cli.php" import "$OUT"/package/*.zip --no-remote --json > "$OUT/import.json"
+else
+	step "Export (Eclair Export) : cette version d'Éclair n'a pas l'envoi direct, paquet remis en fichiers"
+	$WP eclair export --output="$OUT/package" --part-size=50
+	echo "files" > "$OUT/transfer.txt"
+	step "Import du paquet (ligne de commande)"
+	php "$SITE/app/bundled/wordpress/lib/cli.php" import "$OUT"/package/*.zip --no-remote --json > "$OUT/import.json"
+fi
 php -r '$r = json_decode(file_get_contents($argv[1]), true)["report"]; printf("  %d articles, %d pages, %d produits, %d autres · %d adresses gardées, %d changées · %d images, %d documents · %d redirections · %d liens réécrits\n", $r["posts"], $r["pages"], $r["products"], $r["custom"], $r["routes"], $r["moved"], $r["images"], $r["documents"], $r["redirects"], $r["links"]);' "$OUT/import.json"
 
 step "Vérification de chaque ancienne adresse"

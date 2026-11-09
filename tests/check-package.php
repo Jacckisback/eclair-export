@@ -35,7 +35,7 @@ foreach ( $parts as $part ) {
 }
 $check( 'one part holds manifest.json', null !== $main );
 $manifest = json_decode( $files['manifest.json'], true );
-$check( 'format', 'eclair-export' === $manifest['format'] && '1.0' === $manifest['format_version'] );
+$check( 'format', 'eclair-export' === $manifest['format'] && '1.1' === $manifest['format_version'] );
 $check( 'source url', 'https://www.example.test' === $manifest['source']['url'] );
 $check( 'Yoast detected', ! $expect['yoast'] || isset( $manifest['plugins']['detected']['yoast'] ) );
 $check( 'Redirection detected', ! $expect['redirection_active'] || isset( $manifest['plugins']['detected']['redirection'] ) );
