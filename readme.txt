@@ -4,7 +4,7 @@ Tags: migration, export, seo, redirections, eclair
 Requires at least: 6.0
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 License: GPL-3.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -29,6 +29,9 @@ Security: administrators only, nonces on every action, private randomly named fo
 2. Open Tools › Export to Éclair.
 
 == Changelog ==
+
+= 1.0.1 =
+* Fix: downloading the export failed with "The link you followed has expired".
 
 = 1.0.0 =
 * First version.

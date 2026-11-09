@@ -195,4 +195,7 @@ return array(
 	'Éclair has pages, articles and products. These types will be imported as pages or articles, keeping their address: %s.' => 'Éclair tiene páginas, artículos y productos. Estos tipos se importarán como páginas o artículos, conservando su dirección: %s.',
 	'Éclair menus have one level and 30 links: sub-menus will be flattened.' => 'Los menús de Éclair tienen un nivel y 30 enlaces: los submenús se aplanarán.',
 	'Éclair offers French, Spanish, English, German, Italian and Portuguese. Not offered: %s.' => 'Éclair ofrece francés, español, inglés, alemán, italiano y portugués. No ofrecidos: %s.',
+	'This download link is no longer valid (the page stayed open too long, or you logged in again).' => 'Este enlace de descarga ya no es válido (la página estuvo abierta demasiado tiempo o volviste a iniciar sesión).',
+	'Back to the export page' => 'Volver a la página de exportación',
+	'Link expired' => 'Enlace caducado',
 );

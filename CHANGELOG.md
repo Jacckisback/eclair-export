@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.1 — 2026-11-09
+
+- Correctif : le bouton « Télécharger » renvoyait toujours l'écran WordPress « Le lien suivi est expiré ». Le lien était échappé pour le HTML (`&amp;`) puis placé tel quel par le JavaScript : le jeton de sécurité n'arrivait jamais. Les liens sont maintenant des URL brutes, vérifiées par un test unitaire et par le test d'intégration WordPress.
+- Si un lien de téléchargement a vraiment expiré (page restée ouverte trop longtemps, reconnexion), un message clair s'affiche avec un bouton de retour à la page d'export, en français, espagnol et anglais.
+
 ## 1.0.0 — 2026-11-08
 
 Première version.

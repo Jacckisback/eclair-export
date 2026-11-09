@@ -142,6 +142,10 @@ msgstr ""
 msgid "Authors"
 msgstr ""
 
+#: includes/class-eclair-export-plugin.php:231
+msgid "Back to the export page"
+msgstr ""
+
 #: includes/class-eclair-export-report.php:229
 msgid "Block editor (Gutenberg)"
 msgstr ""
@@ -375,6 +379,10 @@ msgstr ""
 msgid "Languages not offered by Éclair"
 msgstr ""
 
+#: includes/class-eclair-export-plugin.php:232
+msgid "Link expired"
+msgstr ""
+
 #: includes/class-eclair-export-diagnostic.php:286
 msgid "Many redirections"
 msgstr ""
@@ -591,7 +599,7 @@ msgstr ""
 msgid "Run the diagnostic again"
 msgstr ""
 
-#: includes/class-eclair-export-plugin.php:218
+#: includes/class-eclair-export-plugin.php:243
 msgid "Run the diagnostic first."
 msgstr ""
 
@@ -716,7 +724,11 @@ msgstr ""
 msgid "They stay in the text as written and are listed in the report, to be replaced by hand: %s."
 msgstr ""
 
-#: includes/class-eclair-export-plugin.php:263
+#: includes/class-eclair-export-plugin.php:231
+msgid "This download link is no longer valid (the page stayed open too long, or you logged in again)."
+msgstr ""
+
+#: includes/class-eclair-export-plugin.php:288
 msgid "This file no longer exists: it was already downloaded or is more than 24 hours old."
 msgstr ""
 
@@ -791,7 +803,7 @@ msgstr ""
 msgid "Writing the archive…"
 msgstr ""
 
-#: includes/class-eclair-export-plugin.php:95 includes/class-eclair-export-plugin.php:142 includes/class-eclair-export-plugin.php:208
+#: includes/class-eclair-export-plugin.php:95 includes/class-eclair-export-plugin.php:142 includes/class-eclair-export-plugin.php:225
 msgid "You are not allowed to export this site."
 msgstr ""
 

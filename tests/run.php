@@ -182,6 +182,13 @@ foreach ( glob( dirname( __DIR__ ) . '/{*.php,includes/*.php,admin/*.php}', GLOB
 	}
 }
 
+/* ------------------------------------------------------------ Download links (regression 1.0.1) */
+
+// Links sent as JSON must not be HTML-escaped: wp_nonce_url() gives "&amp;_wpnonce" and every download failed.
+$plugin_src = file_get_contents( dirname( __DIR__ ) . '/includes/class-eclair-export-plugin.php' );
+check( 'download links: no wp_nonce_url() in the JSON links', ! preg_match( '~=\s*wp_nonce_url\s*\(~', $plugin_src ) );
+check( 'download links: built with add_query_arg()', false !== strpos( $plugin_src, "'_wpnonce' => wp_create_nonce( self::NONCE )" ) );
+
 /* ------------------------------------------------------------ Result */
 
 echo $GLOBALS['passed'] . " checks passed\n";
