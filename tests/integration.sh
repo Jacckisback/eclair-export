@@ -127,11 +127,13 @@ echo "Download link OK\n";
 '
 # Abilities API (WordPress 6.9+): the diagnostic and the migration are offered to AI assistants (MCP adapter), admins only.
 $WP eval --user=admin '
+set_error_handler( static function ( $no, $msg, $file, $line ) { echo "FAIL: PHP warning: $msg ($file:$line)\n"; exit( 1 ); }, E_WARNING | E_NOTICE );
 if ( ! function_exists( "wp_get_ability" ) ) { echo "Abilities API absent from this WordPress: skipped\n"; return; }
 $a = wp_get_ability( "eclair-export/diagnose" );
 $m = wp_get_ability( "eclair-export/migrate" );
 if ( ! $a || ! $m ) { echo "FAIL: abilities not registered\n"; exit( 1 ); }
 $r = $a->execute();
+if ( ! isset( $r["seo"]["images"], $r["seo"]["images_alt"], $r["seo"]["descriptions"], $r["seo"]["published"] ) ) { echo "FAIL: SEO checks missing from the diagnostic: " . wp_json_encode( $r["seo"] ) . "\n"; exit( 1 ); }
 if ( is_wp_error( $r ) || empty( $r["compatibility"] ) || empty( $r["contents"] ) || ! isset( $r["points"] ) ) { echo "FAIL: diagnose ability: " . ( is_wp_error( $r ) ? $r->get_error_message() : wp_json_encode( $r ) ) . "\n"; exit( 1 ); }
 $bad = $m->execute( array( "link_key" => "not-a-key" ) );
 if ( ! is_wp_error( $bad ) || Eclair_Export_Exporter::job() ) { echo "FAIL: migrate ability accepted a wrong key or started an export\n"; exit( 1 ); }

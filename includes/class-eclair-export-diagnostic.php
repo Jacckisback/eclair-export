@@ -174,7 +174,6 @@ final class Eclair_Export_Diagnostic {
 		}
 		$d['redirects']     = array( 'existing' => Eclair_Export_Redirects::count(), 'regex' => self::regex_redirects() );
 		$d['redirects']['migration'] = array_sum( wp_list_pluck( $d['terms'], 'count' ) ) + $d['authors'] + $d['media']['count'] + 12 * max( 1, (int) ceil( $d['total_content'] / 50 ) );
-		$d['seo']           = array( 'source' => Eclair_Export_Seo::source() );
 		$d['acf']           = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->posts} WHERE post_type = 'acf-field-group' AND post_status = 'publish'" ); // phpcs:ignore WordPress.DB
 
 		$d['risks']    = self::risks( $d );
@@ -319,7 +318,7 @@ final class Eclair_Export_Diagnostic {
 			/* translators: %s: number of contents */
 			$add( 'info', __( 'Password-protected contents', 'eclair-export' ), sprintf( __( '%s contents: they are imported as drafts (their password is not exported).', 'eclair-export' ), $n( $d['protected'] ) ) );
 		}
-		if ( isset( $d['seo'] ) ) {
+		if ( isset( $d['seo']['images'], $d['seo']['images_alt'], $d['seo']['descriptions'], $d['seo']['published'] ) ) {
 			$no_alt = max( 0, $d['seo']['images'] - $d['seo']['images_alt'] );
 			if ( $no_alt > 0 ) {
 				/* translators: 1: images without alternative text, 2: number of images */
