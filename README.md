@@ -89,6 +89,14 @@ DB_HOST=127.0.0.1 DB_USER=root DB_PASS=root bash tests/integration.sh
 
 Test complet sur un vrai WordPress (WP-CLI et MySQL nécessaires) : installe WordPress, Yoast et Redirection, crée des contenus variés, lance le diagnostic et l'export, puis vérifie le paquet (empreintes, adresses, SEO, redirections, aucun secret). La CI GitHub le lance sur WordPress 6.0 / PHP 7.4 et sur la dernière version de WordPress / PHP 8.3.
 
+### Banc d'essai de migration de bout en bout
+
+```bash
+DB_HOST=127.0.0.1 DB_USER=root DB_PASS=root ECLAIR_BRANCH=main bash tests/e2e/run.sh
+```
+
+Construit un WordPress réaliste (500 articles Gutenberg, Elementor, Divi, Yoast, WooCommerce, Polylang en deux langues, Redirection), l'exporte, l'importe dans Éclair, puis demande chaque ancienne adresse publique : 200, ou une seule 301 vers la page qui porte le bon titre. Lancé par la CI à chaque envoi ; résumé dans l'onglet Actions, rapports en artefacts. Vérifications à faire à la main : [docs/VERIFICATION.md](docs/VERIFICATION.md).
+
 ## Traductions
 
 Textes sources en anglais, traductions dans `tools/translations/<locale>.php`. Pour régénérer `languages/*.pot`, `*.po` et `*.mo` :
