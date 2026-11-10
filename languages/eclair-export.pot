@@ -11,22 +11,38 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Domain: eclair-export\n"
 
-#: includes/class-eclair-export-diagnostic.php:223
+#: includes/class-eclair-export-diagnostic.php:234
 msgid "\"Discourage search engines\" is ticked in Settings › Reading: every page will be exported as noindex. Untick it if this is the live site."
 msgstr ""
 
-#: admin/view-page.php:39
+#: admin/view-page.php:54
 msgid "\"Prepared by\" block of the report"
 msgstr ""
 
-#: includes/class-eclair-export-diagnostic.php:233
+#: includes/class-eclair-export-diagnostic.php:244
 #, php-format
 msgid "%1$s contents, for %2$s at most in Éclair: split the site or leave old drafts out."
 msgstr ""
 
-#: includes/class-eclair-export-diagnostic.php:237
+#: includes/class-eclair-export-diagnostic.php:248
 #, php-format
 msgid "%1$s files, for %2$s images at most in Éclair: unused files should be cleaned first."
+msgstr ""
+
+#: includes/class-eclair-export-diagnostic.php:325
+#, php-format
+msgid "%1$s of %2$s images have none. They are imported as they are; writing it (in WordPress before the export, or in Éclair after) helps Google Images, accessibility and AI answers."
+msgstr ""
+
+#: includes/class-eclair-export-diagnostic.php:330
+#, php-format
+msgid "%1$s of %2$s published contents have none: search engines pick an extract themselves. The ones you wrote are exported as they are; write the missing ones for your key pages."
+msgstr ""
+
+#. translators: 1: host name, 2: error code, 3: HTTP status
+#: includes/class-eclair-export-sender.php:248
+#, php-format
+msgid "%1$s refused the transfer (%2$s, %3$d)."
 msgstr ""
 
 #. translators: %d: number of plugins
@@ -59,27 +75,33 @@ msgid_plural "%d seconds"
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/class-eclair-export-diagnostic.php:242
+#: includes/class-eclair-export-diagnostic.php:253
 #, php-format
 msgid "%s PDF, video, audio, SVG or other files: they are exported, and must be hosted on the new site before the old one is shut down."
 msgstr ""
 
-#: includes/class-eclair-export-diagnostic.php:279
+#: includes/class-eclair-export-diagnostic.php:290
 #, php-format
 msgid "%s approved comments: Éclair has no comments, they will not be shown on the new site."
 msgstr ""
 
-#: includes/class-eclair-export-diagnostic.php:301
+#: includes/class-eclair-export-diagnostic.php:312
 #, php-format
 msgid "%s articles: in Éclair an article has one main category (the one chosen in the SEO plugin, otherwise the first one)."
 msgstr ""
 
-#: includes/class-eclair-export-diagnostic.php:308
+#: includes/class-eclair-export-diagnostic.php:319
 #, php-format
 msgid "%s contents: they are imported as drafts (their password is not exported)."
 msgstr ""
 
-#: includes/class-eclair-export-diagnostic.php:283
+#. translators: %s: host name
+#: includes/class-eclair-export-sender.php:245
+#, php-format
+msgid "%s does not accept a transfer: no link key is active there (it lasts two hours and serves once), or the site runs a version of Éclair without direct transfer. Create a new key in Éclair: Import WordPress."
+msgstr ""
+
+#: includes/class-eclair-export-diagnostic.php:294
 #, php-format
 msgid "%s field groups: their values are exported, but a theme that displayed them must be rebuilt in Éclair."
 msgstr ""
@@ -90,17 +112,17 @@ msgstr ""
 msgid "%s hours"
 msgstr ""
 
-#: includes/class-eclair-export-diagnostic.php:255
+#: includes/class-eclair-export-diagnostic.php:266
 #, php-format
 msgid "%s pages: texts, images, buttons, videos and FAQs are converted; columns, animations and design effects are not. Each such page should be looked over after the migration."
 msgstr ""
 
-#: includes/class-eclair-export-diagnostic.php:287
+#: includes/class-eclair-export-diagnostic.php:298
 #, php-format
 msgid "%s redirections use regular expressions: Éclair only redirects exact addresses, they will be listed to be rewritten."
 msgstr ""
 
-#: includes/class-eclair-export-diagnostic.php:297
+#: includes/class-eclair-export-diagnostic.php:308
 #, php-format
 msgid "%s tags: their pages are redirected so that no address is lost."
 msgstr ""
@@ -109,8 +131,16 @@ msgstr ""
 msgid "(partial count: very large site)"
 msgstr ""
 
-#: admin/view-page.php:30
+#: admin/view-page.php:45
 msgid "A page in the Éclair colours, to send or print. To get a PDF, open it then choose \"Save as PDF\" in the print window."
+msgstr ""
+
+#: includes/class-eclair-export-sender.php:153
+msgid "A part of the package can no longer be read: start a new export."
+msgstr ""
+
+#: includes/class-eclair-export-sender.php:131
+msgid "A part of the package was already downloaded and deleted: start a new export to send it."
 msgstr ""
 
 #: includes/class-eclair-export-report.php:157
@@ -121,16 +151,24 @@ msgstr ""
 msgid "All exact redirections (patterns listed apart)"
 msgstr ""
 
+#: includes/class-eclair-export-sender.php:237
+msgid "An archive arrived damaged and was refused: it will be sent again when you resume."
+msgstr ""
+
+#: includes/class-eclair-export-sender.php:79 includes/class-eclair-export-sender.php:235
+msgid "An import is already running on the Éclair site: finish it or cancel it there first."
+msgstr ""
+
 #: includes/class-eclair-export-report.php:184
 msgid "Approved comments"
 msgstr ""
 
-#: admin/view-page.php:68
+#: admin/view-page.php:92
 msgid "Archive split into parts of"
 msgstr ""
 
 #. translators: %s: number of articles
-#: includes/class-eclair-export-diagnostic.php:301
+#: includes/class-eclair-export-diagnostic.php:312
 msgid "Articles in several categories"
 msgstr ""
 
@@ -138,11 +176,11 @@ msgstr ""
 msgid "Audio"
 msgstr ""
 
-#: includes/class-eclair-export-report.php:182 admin/view-page.php:78
+#: includes/class-eclair-export-report.php:182 admin/view-page.php:102
 msgid "Authors"
 msgstr ""
 
-#: includes/class-eclair-export-plugin.php:231
+#: includes/class-eclair-export-plugin.php:283
 msgid "Back to the export page"
 msgstr ""
 
@@ -150,11 +188,11 @@ msgstr ""
 msgid "Block editor (Gutenberg)"
 msgstr ""
 
-#: admin/view-page.php:89
+#: admin/view-page.php:123
 msgid "Cancel"
 msgstr ""
 
-#: includes/class-eclair-export-plugin.php:83
+#: includes/class-eclair-export-plugin.php:90
 msgid "Cancel the export and delete the files already prepared?"
 msgstr ""
 
@@ -180,25 +218,59 @@ msgstr ""
 msgid "Category, tag and author archives: redirected (301)"
 msgstr ""
 
+#: includes/class-eclair-export-plugin.php:95
+msgid "Checking the key with your Éclair site…"
+msgstr ""
+
 #: includes/class-eclair-export-report.php:230
 msgid "Classic editor"
 msgstr ""
 
+#: admin/view-page.php:131
+msgid "Click \"Import\", then open the migration report: every old address is checked."
+msgstr ""
+
+#: admin/view-page.php:130
+msgid "Click \"Simulate\": you see what will be created, nothing is written."
+msgstr ""
+
 #. translators: %s: number of comments
-#: includes/class-eclair-export-diagnostic.php:279 includes/class-eclair-export-report.php:165
+#: includes/class-eclair-export-diagnostic.php:290 includes/class-eclair-export-report.php:165
 msgid "Comments"
 msgstr ""
 
-#: admin/view-page.php:43
+#: admin/view-page.php:58
 msgid "Company"
 msgstr ""
 
-#: includes/class-eclair-export-plugin.php:81
+#: includes/class-eclair-export-plugin.php:125
+msgid "Compatibility with Éclair: what moves as is, out of everything the site holds."
+msgstr ""
+
+#: admin/view-page.php:157
+msgid "Connect your assistant to Éclair (Settings › AI) and ask it to finish the migration: it reads what is left and proposes the fixes."
+msgstr ""
+
+#. translators: %s: name and host of the Éclair site
+#: includes/class-eclair-export-sender.php:269
+#, php-format
+msgid "Connected to %s: the package will be sent as soon as it is ready."
+msgstr ""
+
+#: includes/class-eclair-export-plugin.php:88
 msgid "Connection lost, new try in a few seconds…"
 msgstr ""
 
-#: includes/class-eclair-export-report.php:172 includes/class-eclair-export-report.php:238 admin/view-page.php:59
+#: includes/class-eclair-export-report.php:172 includes/class-eclair-export-report.php:238 admin/view-page.php:81
 msgid "Contents"
+msgstr ""
+
+#: admin/view-page.php:29
+msgid "Contents, images, SEO and redirections travel together. Every address is kept or redirected: no link is lost."
+msgstr ""
+
+#: admin/view-page.php:155
+msgid "Contents, images, SEO titles and descriptions, menus, redirections. Each address is kept, or redirected in one 301."
 msgstr ""
 
 #. translators: 1: contents done, 2: total
@@ -215,8 +287,14 @@ msgstr ""
 msgid "Converted"
 msgstr ""
 
+#. translators: 1: host name, 2: technical error
+#: includes/class-eclair-export-sender.php:221
+#, php-format
+msgid "Could not reach %1$s (%2$s). Check that the site is online, then resume."
+msgstr ""
+
 #. translators: %s: list of content types
-#: includes/class-eclair-export-diagnostic.php:275
+#: includes/class-eclair-export-diagnostic.php:286
 msgid "Custom content types"
 msgstr ""
 
@@ -225,19 +303,27 @@ msgid "Custom content types: as pages or articles"
 msgstr ""
 
 #. translators: %s: number of field groups
-#: includes/class-eclair-export-diagnostic.php:283
+#: includes/class-eclair-export-diagnostic.php:294
 msgid "Custom fields (ACF)"
 msgstr ""
 
-#: includes/class-eclair-export-plugin.php:123
+#: includes/class-eclair-export-plugin.php:141
 msgid "Detected:"
 msgstr ""
 
-#: admin/view-page.php:25
+#: includes/class-eclair-export-abilities.php:37
+msgid "Diagnose the migration to Éclair"
+msgstr ""
+
+#: includes/class-eclair-export-abilities.php:23
+msgid "Diagnose this site and move it to Éclair CMS."
+msgstr ""
+
+#: admin/view-page.php:33 admin/view-page.php:40
 msgid "Diagnostic"
 msgstr ""
 
-#: includes/class-eclair-export-plugin.php:79
+#: includes/class-eclair-export-plugin.php:86
 msgid "Diagnostic in progress… (up to a minute on a large site)"
 msgstr ""
 
@@ -248,7 +334,7 @@ msgid "Diagnostic of %s"
 msgstr ""
 
 #. translators: %s: date and time
-#: includes/class-eclair-export-plugin.php:134
+#: includes/class-eclair-export-plugin.php:152
 #, php-format
 msgid "Diagnostic of %s."
 msgstr ""
@@ -257,15 +343,11 @@ msgstr ""
 msgid "Documents (PDF, office files)"
 msgstr ""
 
-#: includes/class-eclair-export-plugin.php:84
+#: includes/class-eclair-export-plugin.php:91
 msgid "Download"
 msgstr ""
 
-#: admin/view-page.php:93
-msgid "Download every part: each one is deleted from this server as soon as it is downloaded. Then import them in Éclair (Import WordPress)."
-msgstr ""
-
-#: admin/view-page.php:67
+#: admin/view-page.php:91
 msgid "Downloaded from the old site during the import (lighter archive; the old site must stay online until the import is done)"
 msgstr ""
 
@@ -273,7 +355,7 @@ msgstr ""
 msgid "Drafts"
 msgstr ""
 
-#: includes/class-eclair-export-diagnostic.php:293
+#: includes/class-eclair-export-diagnostic.php:304
 msgid "Drop-down menus"
 msgstr ""
 
@@ -281,7 +363,7 @@ msgstr ""
 msgid "Drop-down menus: one level"
 msgstr ""
 
-#: admin/view-page.php:44
+#: admin/view-page.php:59
 msgid "E-mail"
 msgstr ""
 
@@ -293,20 +375,20 @@ msgstr ""
 msgid "Estimate"
 msgstr ""
 
+#: admin/view-page.php:156
+msgid "Every old address checked one by one, SEO checklist, speed before and after: a page to hand to your client."
+msgstr ""
+
 #: includes/class-eclair-export-report.php:151
 msgid "Exact addresses (slugs, dates, .html, accents)"
 msgstr ""
 
-#: includes/class-eclair-export-diagnostic.php:290
+#: includes/class-eclair-export-diagnostic.php:301
 msgid "Existing and needed redirections together go beyond the 5,000 that Éclair keeps: the least useful ones (attachment pages, date archives) will be left out first."
 msgstr ""
 
 #: includes/class-eclair-export-report.php:154
 msgid "Existing redirections and old ?p= links"
-msgstr ""
-
-#: admin/view-page.php:56
-msgid "Export"
 msgstr ""
 
 #: includes/class-eclair-export-exporter.php:650
@@ -317,11 +399,15 @@ msgstr ""
 msgid "Export from WordPress"
 msgstr ""
 
-#: includes/class-eclair-export-plugin.php:82
+#: includes/class-eclair-export-plugin.php:89
 msgid "Export paused: it will resume from where it stopped."
 msgstr ""
 
-#: includes/class-eclair-export-plugin.php:59 admin/view-page.php:21
+#: includes/class-eclair-export-abilities.php:50
+msgid "Export this site to Éclair"
+msgstr ""
+
+#: includes/class-eclair-export-plugin.php:65 admin/view-page.php:22
 msgid "Export to Éclair"
 msgstr ""
 
@@ -330,7 +416,7 @@ msgid "Feasible migration, with a few points to handle by hand."
 msgstr ""
 
 #. translators: %s: number of files
-#: includes/class-eclair-export-diagnostic.php:242
+#: includes/class-eclair-export-diagnostic.php:253
 msgid "Files that are not photos"
 msgstr ""
 
@@ -338,11 +424,11 @@ msgstr ""
 msgid "Forms, sliders and plugin widgets (rebuilt in Éclair)"
 msgstr ""
 
-#: includes/class-eclair-export-plugin.php:106 includes/class-eclair-export-report.php:46
+#: includes/class-eclair-export-plugin.php:119 includes/class-eclair-export-report.php:46
 msgid "Good to know"
 msgstr ""
 
-#: admin/view-page.php:34
+#: admin/view-page.php:49
 msgid "HTML"
 msgstr ""
 
@@ -354,15 +440,27 @@ msgstr ""
 msgid "Images, alternative texts and captions"
 msgstr ""
 
+#: admin/view-page.php:155
+msgid "Import"
+msgstr ""
+
+#: admin/view-page.php:35 admin/view-page.php:152
+msgid "Import in Éclair"
+msgstr ""
+
 #: includes/class-eclair-export-report.php:250
 msgid "Import into Éclair (images optimised in WebP)"
 msgstr ""
 
-#: admin/view-page.php:66
+#: admin/view-page.php:90
 msgid "In the archive (recommended: the package is complete, the old site can be shut down)"
 msgstr ""
 
-#: admin/view-page.php:79
+#: admin/view-page.php:76
+msgid "In Éclair: Administration › Import WordPress › Create a link key, then paste it here. The package goes straight to your new site, whatever its size: nothing to download, nothing to upload. Leave empty to download the package instead."
+msgstr ""
+
+#: admin/view-page.php:103
 msgid "Include the e-mail addresses of the authors (to create their Éclair accounts). Passwords are never exported."
 msgstr ""
 
@@ -375,23 +473,27 @@ msgid "Language of each content and links between translations"
 msgstr ""
 
 #. translators: %s: language codes
-#: includes/class-eclair-export-diagnostic.php:246
+#: includes/class-eclair-export-diagnostic.php:257
 msgid "Languages not offered by Éclair"
 msgstr ""
 
-#: includes/class-eclair-export-plugin.php:232
+#: includes/class-eclair-export-plugin.php:284
 msgid "Link expired"
 msgstr ""
 
-#: includes/class-eclair-export-diagnostic.php:290
+#: admin/view-page.php:74
+msgid "Link key of your Éclair site"
+msgstr ""
+
+#: includes/class-eclair-export-diagnostic.php:301
 msgid "Many redirections"
 msgstr ""
 
-#: admin/view-page.php:98
-msgid "Many sites to migrate? The same export runs from the command line:"
+#: admin/view-page.php:148
+msgid "Many sites to migrate? The same migration runs from the command line:"
 msgstr ""
 
-#: includes/class-eclair-export-report.php:188 admin/view-page.php:65
+#: includes/class-eclair-export-report.php:188 admin/view-page.php:89
 msgid "Media"
 msgstr ""
 
@@ -405,8 +507,12 @@ msgstr ""
 msgid "Menus"
 msgstr ""
 
-#: admin/view-page.php:48
+#: admin/view-page.php:63
 msgid "Message of the \"Next step\" block (empty: default text)"
+msgstr ""
+
+#: admin/view-page.php:34 admin/view-page.php:71
+msgid "Migration"
 msgstr ""
 
 #. translators: %s: site name
@@ -415,36 +521,44 @@ msgstr ""
 msgid "Migration diagnostic – %s"
 msgstr ""
 
+#: includes/class-eclair-export-plugin.php:122
+msgid "Migration possible, a few points to check"
+msgstr ""
+
+#: admin/view-page.php:156
+msgid "Migration report"
+msgstr ""
+
 #: includes/class-eclair-export-report.php:48
 msgid "Migration that needs preparation before it starts."
 msgstr ""
 
-#: includes/class-eclair-export-report.php:116
+#: includes/class-eclair-export-abilities.php:22 includes/class-eclair-export-report.php:116
 msgid "Migration to Éclair"
 msgstr ""
 
 #. translators: 1: number of contents, 2: Éclair limit
-#: includes/class-eclair-export-diagnostic.php:233
+#: includes/class-eclair-export-diagnostic.php:244
 msgid "More contents than one Éclair site holds"
 msgstr ""
 
-#: admin/view-page.php:22
-msgid "Move this site to Éclair CMS without losing a single address: contents, images, SEO and redirections in one package."
+#: admin/view-page.php:28
+msgid "Move this site to Éclair"
 msgstr ""
 
 #: includes/class-eclair-export-report.php:149
 msgid "Moves as is"
 msgstr ""
 
-#: includes/class-eclair-export-diagnostic.php:311
+#: includes/class-eclair-export-diagnostic.php:334
 msgid "Multisite network"
 msgstr ""
 
-#: admin/view-page.php:42
+#: admin/view-page.php:57
 msgid "Name"
 msgstr ""
 
-#: admin/view-page.php:95
+#: admin/view-page.php:133 admin/view-page.php:145
 msgid "New export"
 msgstr ""
 
@@ -452,7 +566,7 @@ msgstr ""
 msgid "Next step"
 msgstr ""
 
-#: includes/class-eclair-export-plugin.php:127 includes/class-eclair-export-report.php:140
+#: includes/class-eclair-export-plugin.php:145 includes/class-eclair-export-report.php:140
 msgid "None"
 msgstr ""
 
@@ -466,20 +580,40 @@ msgstr ""
 msgid "Not enough disk space for the archive (%1$s needed, %2$s free). Choose \"media downloaded from the old site\" or free some space."
 msgstr ""
 
-#: includes/class-eclair-export-plugin.php:127 includes/class-eclair-export-report.php:140
+#: includes/class-eclair-export-plugin.php:145 includes/class-eclair-export-report.php:140
 msgid "Nothing blocks the migration."
 msgstr ""
 
-#: includes/class-eclair-export-diagnostic.php:304
+#: includes/class-eclair-export-diagnostic.php:315
 msgid "Old addresses with ?p= and ?page_id= are redirected to the new ones by Éclair."
 msgstr ""
 
-#: includes/class-eclair-export-diagnostic.php:311
+#: admin/view-page.php:99
+msgid "Only matters if you download the package: small parts go through the upload limits of shared hosting on the Éclair side."
+msgstr ""
+
+#: includes/class-eclair-export-diagnostic.php:334
 msgid "Only this site of the network is exported."
 msgstr ""
 
-#: includes/class-eclair-export-plugin.php:63
+#: includes/class-eclair-export-plugin.php:69
 msgid "Open"
+msgstr ""
+
+#: admin/view-page.php:133
+msgid "Open my Éclair site"
+msgstr ""
+
+#: admin/view-page.php:129
+msgid "Open the administration of your Éclair site, then Import WordPress."
+msgstr ""
+
+#: admin/view-page.php:79
+msgid "Options (contents, media, authors)"
+msgstr ""
+
+#: admin/view-page.php:143
+msgid "Or download every part: each one is deleted from this server as soon as it is downloaded. Then import them in Éclair (Import WordPress)."
 msgstr ""
 
 #: includes/class-eclair-export-report.php:166
@@ -490,8 +624,14 @@ msgstr ""
 msgid "Other"
 msgstr ""
 
-#: admin/view-page.php:35
+#: admin/view-page.php:50
 msgid "PDF (print)"
+msgstr ""
+
+#. translators: %s: name and host of the Éclair site
+#: includes/class-eclair-export-sender.php:266
+#, php-format
+msgid "Package delivered to %s."
 msgstr ""
 
 #: includes/class-eclair-export-report.php:150
@@ -499,18 +639,18 @@ msgid "Pages and articles, drafts and scheduled ones included"
 msgstr ""
 
 #. translators: %s: number of pages
-#: includes/class-eclair-export-diagnostic.php:255
+#: includes/class-eclair-export-diagnostic.php:266
 msgid "Pages built with Elementor or Divi"
 msgstr ""
 
 #. translators: %d: part number
-#: includes/class-eclair-export-plugin.php:86
+#: includes/class-eclair-export-plugin.php:93
 #, php-format
 msgid "Part %d"
 msgstr ""
 
 #. translators: %s: number of contents
-#: includes/class-eclair-export-diagnostic.php:308
+#: includes/class-eclair-export-diagnostic.php:319
 msgid "Password-protected contents"
 msgstr ""
 
@@ -518,7 +658,11 @@ msgstr ""
 msgid "Passwords: never exported"
 msgstr ""
 
-#: admin/view-page.php:45
+#: admin/view-page.php:141
+msgid "Paste the link key created in Éclair: Administration › Import WordPress › Create a link key."
+msgstr ""
+
+#: admin/view-page.php:60
 msgid "Phone"
 msgstr ""
 
@@ -526,7 +670,7 @@ msgstr ""
 msgid "Photos and images"
 msgstr ""
 
-#: includes/class-eclair-export-diagnostic.php:304
+#: includes/class-eclair-export-diagnostic.php:315
 msgid "Plain permalinks (?p=123)"
 msgstr ""
 
@@ -542,12 +686,28 @@ msgstr ""
 msgid "Points of attention"
 msgstr ""
 
+#: includes/class-eclair-export-plugin.php:122
+msgid "Points to solve before migrating"
+msgstr ""
+
+#: includes/class-eclair-export-plugin.php:99
+msgid "Prepare the package"
+msgstr ""
+
 #: includes/class-eclair-export-report.php:262
 msgid "Prepared by"
 msgstr ""
 
+#: includes/class-eclair-export-abilities.php:51
+msgid "Prepares the export package (contents, media, SEO, redirections) and, with a link key created on the Éclair site (Import WordPress › Create a link key), sends it there. Works in short steps: call it again with the same input until \"stage\" is \"delivered\" or \"ready\". Nothing is changed on this WordPress site. The import itself is then started by a person in Éclair."
+msgstr ""
+
 #: includes/class-eclair-export-exporter.php:643
 msgid "Preparing (settings, authors, categories, menus)…"
+msgstr ""
+
+#: admin/view-page.php:111
+msgid "Preparing the package"
 msgstr ""
 
 #: includes/class-eclair-export-report.php:274
@@ -562,7 +722,11 @@ msgstr ""
 msgid "Published"
 msgstr ""
 
-#: admin/view-page.php:25
+#: includes/class-eclair-export-abilities.php:38
+msgid "Read only. What this WordPress site holds (contents, media, plugins, shortcodes, SEO), what moves to Éclair CMS as is, what needs care, a compatibility score and the estimated time."
+msgstr ""
+
+#: admin/view-page.php:40
 msgid "Read only: what the site holds, what moves as is, what needs care, and how long it takes. Nothing is exported."
 msgstr ""
 
@@ -570,8 +734,16 @@ msgstr ""
 msgid "Read-only diagnostic: nothing was exported or changed on the site."
 msgstr ""
 
+#: includes/class-eclair-export-plugin.php:122
+msgid "Ready to migrate"
+msgstr ""
+
+#: admin/view-page.php:74 admin/view-page.php:139
+msgid "Recommended"
+msgstr ""
+
 #. translators: %s: number of redirections
-#: includes/class-eclair-export-diagnostic.php:287
+#: includes/class-eclair-export-diagnostic.php:298
 msgid "Redirections with patterns"
 msgstr ""
 
@@ -579,27 +751,27 @@ msgstr ""
 msgid "Redirections…"
 msgstr ""
 
-#: admin/view-page.php:29
+#: admin/view-page.php:44
 msgid "Report for the client"
 msgstr ""
 
-#: admin/view-page.php:88
-msgid "Resume the export"
+#: admin/view-page.php:122
+msgid "Resume"
 msgstr ""
 
 #: includes/class-eclair-export-report.php:251
 msgid "Review by hand after the migration"
 msgstr ""
 
-#: admin/view-page.php:26
+#: admin/view-page.php:41
 msgid "Run the diagnostic"
 msgstr ""
 
-#: admin/view-page.php:26
+#: admin/view-page.php:41
 msgid "Run the diagnostic again"
 msgstr ""
 
-#: includes/class-eclair-export-plugin.php:243
+#: includes/class-eclair-export-plugin.php:295
 msgid "Run the diagnostic first."
 msgstr ""
 
@@ -615,20 +787,48 @@ msgstr ""
 msgid "SEO titles, descriptions, canonical, noindex"
 msgstr ""
 
+#. translators: 1: contents without meta description, 2: number of published contents
+#: includes/class-eclair-export-diagnostic.php:330
+msgid "SEO: contents without meta description"
+msgstr ""
+
+#. translators: 1: images without alternative text, 2: number of images
+#: includes/class-eclair-export-diagnostic.php:325
+msgid "SEO: images without alternative text"
+msgstr ""
+
 #: includes/class-eclair-export-report.php:195
 msgid "SVG and other files"
 msgstr ""
 
-#: admin/view-page.php:49
+#: admin/view-page.php:64
 msgid "Save"
 msgstr ""
 
-#: includes/class-eclair-export-plugin.php:87
+#: includes/class-eclair-export-plugin.php:94
 msgid "Saved."
 msgstr ""
 
+#: admin/view-page.php:139
+msgid "Send it straight to Éclair"
+msgstr ""
+
+#: admin/view-page.php:140
+msgid "Send to Éclair"
+msgstr ""
+
+#. translators: 1: size sent, 2: total size, 3: name and host of the Éclair site
+#: includes/class-eclair-export-sender.php:272
+#, php-format
+msgid "Sending to %3$s: %1$s of %2$s"
+msgstr ""
+
+#: admin/view-page.php:116
+msgid "Sending to Éclair"
+msgstr ""
+
 #. translators: 1: orders, 2: customers
-#: includes/class-eclair-export-diagnostic.php:250
+#: includes/class-eclair-export-diagnostic.php:261
 msgid "Shop orders and customer accounts stay in WooCommerce"
 msgstr ""
 
@@ -637,7 +837,7 @@ msgid "Shortcode"
 msgstr ""
 
 #. translators: %s: list of shortcodes
-#: includes/class-eclair-export-diagnostic.php:265
+#: includes/class-eclair-export-diagnostic.php:276
 msgid "Shortcodes that cannot be converted"
 msgstr ""
 
@@ -645,16 +845,16 @@ msgstr ""
 msgid "Shortcodes used"
 msgstr ""
 
+#: admin/view-page.php:154
+msgid "Simulation"
+msgstr ""
+
 #: includes/class-eclair-export-report.php:252
 msgid "Size of the export archive"
 msgstr ""
 
-#: admin/view-page.php:75
-msgid "Small parts go through the upload limits of shared hosting on the Éclair side."
-msgstr ""
-
-#: admin/view-page.php:81
-msgid "Start the export"
+#: includes/class-eclair-export-plugin.php:98 admin/view-page.php:107
+msgid "Start the migration"
 msgstr ""
 
 #: includes/class-eclair-export-report.php:164
@@ -666,7 +866,7 @@ msgid "Straightforward migration: almost everything moves as is."
 msgstr ""
 
 #. translators: %s: number of tags
-#: includes/class-eclair-export-diagnostic.php:297
+#: includes/class-eclair-export-diagnostic.php:308
 msgid "Tags"
 msgstr ""
 
@@ -678,7 +878,7 @@ msgstr ""
 msgid "Texts, images, buttons, blurbs, toggles, testimonials (layout simplified)"
 msgstr ""
 
-#: includes/class-eclair-export-diagnostic.php:229
+#: includes/class-eclair-export-diagnostic.php:240
 msgid "The PHP \"dom\" extension is missing"
 msgstr ""
 
@@ -686,7 +886,7 @@ msgstr ""
 msgid "The PHP \"dom\" extension is missing on this server: ask your host to enable it."
 msgstr ""
 
-#: includes/class-eclair-export-diagnostic.php:226
+#: includes/class-eclair-export-diagnostic.php:237
 msgid "The PHP \"zip\" extension is missing"
 msgstr ""
 
@@ -694,20 +894,20 @@ msgstr ""
 msgid "The PHP \"zip\" extension is missing on this server: ask your host to enable it."
 msgstr ""
 
-#: includes/class-eclair-export-diagnostic.php:226
+#: includes/class-eclair-export-diagnostic.php:237
 msgid "The archive cannot be built on this server. Ask the host to enable it, or run the export with WP-CLI on a copy of the site."
 msgstr ""
 
-#: includes/class-eclair-export-diagnostic.php:250
+#: includes/class-eclair-export-diagnostic.php:261
 #, php-format
 msgid "The catalogue moves (products, prices, photos, variations); the %1$s orders and %2$s customer accounts do not: keep an export of them for your accounts."
 msgstr ""
 
-#: includes/class-eclair-export-diagnostic.php:229
+#: includes/class-eclair-export-diagnostic.php:240
 msgid "The contents cannot be converted on this server. Ask the host to enable it, or run the export with WP-CLI on a copy of the site."
 msgstr ""
 
-#: includes/class-eclair-export-plugin.php:88
+#: includes/class-eclair-export-plugin.php:100
 msgid "The export is running: if you leave, it will resume when you come back."
 msgstr ""
 
@@ -715,49 +915,85 @@ msgstr ""
 msgid "The migration keeps every address, redirects what changes and checks that no old link ends on an error page."
 msgstr ""
 
-#: admin/view-page.php:56
-msgid "The package is prepared in short steps: it works on slow shared hosting and resumes by itself after a cut. It is deleted after download, or after 24 hours."
+#: admin/view-page.php:71
+msgid "The package is prepared in short steps, then sent to your Éclair site. It works on slow shared hosting and resumes by itself after a cut. Nothing is changed on this WordPress site."
 msgstr ""
 
-#: includes/class-eclair-export-plugin.php:80
+#: includes/class-eclair-export-abilities.php:118
+msgid "The package is ready: download it from Tools › Export to Éclair, or call again with a link key to send it."
+msgstr ""
+
+#: admin/view-page.php:134
+msgid "The package was deleted from this server. This WordPress site was not changed: keep it online until the new site is checked."
+msgstr ""
+
+#: includes/class-eclair-export-plugin.php:87
 msgid "The request failed. Check your connection, then try again."
 msgstr ""
 
-#: includes/class-eclair-export-diagnostic.php:223
+#: includes/class-eclair-export-diagnostic.php:234
 msgid "The site asks search engines not to index it"
+msgstr ""
+
+#: includes/class-eclair-export-plugin.php:97
+msgid "The transfer is running: if you leave, it will resume when you come back."
 msgstr ""
 
 #: includes/class-eclair-export-storage.php:29
 msgid "The uploads folder is not writable: the export cannot be prepared."
 msgstr ""
 
-#: includes/class-eclair-export-diagnostic.php:265
+#: includes/class-eclair-export-sender.php:236
+msgid "The Éclair site has no room left on its disk for this package. Free some space there, or export without the media."
+msgstr ""
+
+#: includes/class-eclair-export-sender.php:238
+msgid "The Éclair site only accepts https: check its address in its settings, then create a new key."
+msgstr ""
+
+#: includes/class-eclair-export-sender.php:233
+msgid "The Éclair site refused the key: it has expired or was replaced. Create a new one in Éclair (Import WordPress), then paste it here."
+msgstr ""
+
+#: includes/class-eclair-export-diagnostic.php:276
 #, php-format
 msgid "They stay in the text as written and are listed in the report, to be replaced by hand: %s."
 msgstr ""
 
-#: includes/class-eclair-export-plugin.php:231
+#: includes/class-eclair-export-plugin.php:283
 msgid "This download link is no longer valid (the page stayed open too long, or you logged in again)."
 msgstr ""
 
-#: includes/class-eclair-export-plugin.php:288
+#: includes/class-eclair-export-plugin.php:340
 msgid "This file no longer exists: it was already downloaded or is more than 24 hours old."
 msgstr ""
 
-#: includes/class-eclair-export-plugin.php:145
+#: includes/class-eclair-export-sender.php:64
+msgid "This is not a link key. Copy it again from Éclair: Import WordPress › Create a link key."
+msgstr ""
+
+#: includes/class-eclair-export-plugin.php:163
 msgid "This page has expired: reload it."
 msgstr ""
 
-#: includes/class-eclair-export-plugin.php:106 includes/class-eclair-export-report.php:46
+#: includes/class-eclair-export-plugin.php:119 includes/class-eclair-export-report.php:46
 msgid "To check"
 msgstr ""
 
-#: includes/class-eclair-export-plugin.php:106 includes/class-eclair-export-report.php:46
+#: includes/class-eclair-export-plugin.php:119 includes/class-eclair-export-report.php:46
 msgid "To solve"
+msgstr ""
+
+#: includes/class-eclair-export-sender.php:234
+msgid "Too many refused attempts: the Éclair site blocks this server for a few minutes. Wait, then resume with a new key."
 msgstr ""
 
 #: includes/class-eclair-export-report.php:174
 msgid "Total"
+msgstr ""
+
+#: includes/class-eclair-export-plugin.php:96
+msgid "Transfer paused: it will resume from where it stopped."
 msgstr ""
 
 #: includes/class-eclair-export-report.php:174
@@ -777,7 +1013,7 @@ msgid "Version"
 msgstr ""
 
 #. translators: 1: number of files, 2: Éclair limit
-#: includes/class-eclair-export-diagnostic.php:237
+#: includes/class-eclair-export-diagnostic.php:248
 msgid "Very large media library"
 msgstr ""
 
@@ -785,12 +1021,16 @@ msgstr ""
 msgid "Videos"
 msgstr ""
 
-#: admin/view-page.php:46
+#: admin/view-page.php:61
 msgid "Website"
 msgstr ""
 
 #: includes/class-eclair-export-report.php:196
 msgid "Weight of the original files"
+msgstr ""
+
+#: admin/view-page.php:152
+msgid "What happens on the other side, in three clicks."
 msgstr ""
 
 #: includes/class-eclair-export-report.php:202
@@ -799,6 +1039,10 @@ msgstr ""
 
 #: includes/class-eclair-export-report.php:147
 msgid "What moves, what is adapted, what stays behind"
+msgstr ""
+
+#: admin/view-page.php:157
+msgid "With Claude or ChatGPT"
 msgstr ""
 
 #: includes/class-eclair-export-report.php:162
@@ -815,27 +1059,27 @@ msgstr ""
 msgid "Writing the archive…"
 msgstr ""
 
-#: includes/class-eclair-export-plugin.php:95 includes/class-eclair-export-plugin.php:142 includes/class-eclair-export-plugin.php:225
+#: includes/class-eclair-export-plugin.php:107 includes/class-eclair-export-plugin.php:160 includes/class-eclair-export-plugin.php:277
 msgid "You are not allowed to export this site."
 msgstr ""
 
-#: admin/view-page.php:92
+#: admin/view-page.php:137
 msgid "Your package is ready"
+msgstr ""
+
+#: admin/view-page.php:126
+msgid "Your site has arrived in Éclair"
 msgstr ""
 
 #: includes/class-eclair-export-report.php:127
 msgid "compatibility"
 msgstr ""
 
-#: includes/class-eclair-export-plugin.php:109
-msgid "compatibility with Éclair"
-msgstr ""
-
-#: includes/class-eclair-export-plugin.php:110 includes/class-eclair-export-report.php:131
+#: includes/class-eclair-export-plugin.php:128 includes/class-eclair-export-report.php:131
 msgid "contents"
 msgstr ""
 
-#: includes/class-eclair-export-plugin.php:112 includes/class-eclair-export-report.php:134
+#: includes/class-eclair-export-plugin.php:130 includes/class-eclair-export-report.php:134
 msgid "estimated transfer time"
 msgstr ""
 
@@ -849,11 +1093,11 @@ msgstr ""
 msgid "media files · %s"
 msgstr ""
 
-#: admin/view-page.php:71
+#: admin/view-page.php:95
 msgid "no split (one file)"
 msgstr ""
 
-#: includes/class-eclair-export-plugin.php:111
+#: includes/class-eclair-export-plugin.php:129
 msgid "of media"
 msgstr ""
 
@@ -861,17 +1105,21 @@ msgstr ""
 msgid "plugin no longer active"
 msgstr ""
 
-#: includes/class-eclair-export-diagnostic.php:275
+#: includes/class-eclair-export-diagnostic.php:286
 #, php-format
 msgid "Éclair has pages, articles and products. These types will be imported as pages or articles, keeping their address: %s."
 msgstr ""
 
-#: includes/class-eclair-export-diagnostic.php:293
+#: includes/class-eclair-export-diagnostic.php:304
 msgid "Éclair menus have one level and 30 links: sub-menus will be flattened."
 msgstr ""
 
-#: includes/class-eclair-export-diagnostic.php:246
+#: includes/class-eclair-export-diagnostic.php:257
 #, php-format
 msgid "Éclair offers French, Spanish, English, German, Italian and Portuguese. Not offered: %s."
+msgstr ""
+
+#: admin/view-page.php:154
+msgid "Éclair shows what it will create and which addresses change, without writing anything."
 msgstr ""
 

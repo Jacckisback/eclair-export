@@ -149,6 +149,7 @@ final class Eclair_Export_Seo {
 			'organization'  => array( 'name' => '', 'logo' => '' ),
 			'robots_txt'    => mb_substr( $robots, 0, 20000 ),
 			'verification'  => array(),
+			'social'        => array( 'twitter' => '', 'image' => '', 'profiles' => array() ),
 		);
 		if ( 'yoast' === $out['source'] ) {
 			$titles                       = (array) get_option( 'wpseo_titles', array() );
@@ -161,8 +162,22 @@ final class Eclair_Export_Seo {
 					$out['verification'][ $engine ] = (string) $wpseo[ $k ];
 				}
 			}
+			$social                   = (array) get_option( 'wpseo_social', array() );
+			$out['social']['twitter'] = isset( $social['twitter_site'] ) ? (string) $social['twitter_site'] : '';
+			$out['social']['image']   = isset( $social['og_default_image'] ) ? (string) $social['og_default_image'] : '';
+			$profiles                 = isset( $social['other_social_urls'] ) ? (array) $social['other_social_urls'] : array();
+			if ( ! empty( $social['facebook_site'] ) ) {
+				array_unshift( $profiles, (string) $social['facebook_site'] );
+			}
+			$out['social']['profiles'] = $profiles;
 		} elseif ( 'rankmath' === $out['source'] ) {
 			$titles                      = (array) get_option( 'rank-math-options-titles', array() );
+			$out['social']['twitter']  = isset( $titles['twitter_author_names'] ) ? (string) $titles['twitter_author_names'] : '';
+			$out['social']['image']    = isset( $titles['open_graph_image'] ) ? (string) $titles['open_graph_image'] : '';
+			$out['social']['profiles'] = array_merge(
+				empty( $titles['social_url_facebook'] ) ? array() : array( (string) $titles['social_url_facebook'] ),
+				isset( $titles['social_additional_profiles'] ) ? (array) preg_split( '~\s+~', (string) $titles['social_additional_profiles'], -1, PREG_SPLIT_NO_EMPTY ) : array()
+			);
 			$out['separator']            = isset( $titles['title_separator'] ) ? (string) $titles['title_separator'] : '';
 			$out['organization']['name'] = isset( $titles['knowledgegraph_name'] ) ? (string) $titles['knowledgegraph_name'] : '';
 			$out['organization']['logo'] = isset( $titles['knowledgegraph_logo'] ) ? (string) $titles['knowledgegraph_logo'] : '';
@@ -173,6 +188,10 @@ final class Eclair_Export_Seo {
 				}
 			}
 		}
+		// Public profile addresses only, as written in the SEO plugin; the X account without its @.
+		$out['social']['twitter']  = ltrim( trim( (string) preg_replace( '~^https?://(www\.)?(twitter|x)\.com/~i', '', $out['social']['twitter'] ) ), '@' );
+		$out['social']['image']    = esc_url_raw( $out['social']['image'] );
+		$out['social']['profiles'] = array_slice( array_values( array_unique( array_filter( array_map( 'esc_url_raw', array_map( 'strval', $out['social']['profiles'] ) ) ) ) ), 0, 20 );
 		return $out;
 	}
 

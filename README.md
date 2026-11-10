@@ -24,6 +24,22 @@ Extension WordPress qui diagnostique le site, puis l'exporte en un paquet comple
 
 Format complet du paquet : [docs/FORMAT.md](docs/FORMAT.md).
 
+## Migration en un envoi (1.1)
+
+1. Dans Éclair : **Administration › Import WordPress › Créer une clé de liaison**. Copiez la clé.
+2. Dans WordPress : **Outils › Exporter vers Éclair**, collez la clé, cliquez sur **Lancer la migration**.
+3. Le paquet est préparé puis envoyé au site Éclair par morceaux, quelle que soit sa taille. Une coupure ne fait rien perdre : l'envoi reprend.
+4. Dans Éclair : **Simuler**, puis **Importer**, puis ouvrez le rapport de migration.
+
+La clé ne permet que de déposer le paquet sur le site Éclair, elle dure deux heures et ne sert qu'une fois. Sans clé, le paquet se télécharge comme avant.
+
+En ligne de commande : `wp eclair export --send=<clé>`.
+
+### Avec Claude ou ChatGPT
+
+- **Sur WordPress 6.9+** : l'extension déclare deux capacités à l'API Abilities, `eclair-export/diagnose` (lecture seule) et `eclair-export/migrate` (export puis envoi avec une clé de liaison). Avec l'adaptateur MCP de WordPress, un assistant peut diagnostiquer le site et lancer la migration. Réservé aux administrateurs.
+- **Sur Éclair** : activez le connecteur MCP (Réglages › IA) et demandez « finis ma migration WordPress » : l'assistant lit le bilan de l'import (outil `get_migration`) et propose les corrections contenu par contenu. Rien n'est publié sans votre accord.
+
 ## Côté Éclair : import et rapport client
 
 Dans Éclair CMS (fonction **Import WordPress**, livrée avec Éclair) :

@@ -3,7 +3,7 @@
  * Plugin Name:       Eclair Export
  * Plugin URI:        https://github.com/Jacckisback/eclair-export
  * Description:       Diagnose a WordPress site and export it as a complete package (contents, media, SEO, redirects) ready to be imported into Éclair CMS without breaking URLs.
- * Version:           1.0.2
+ * Version:           1.1.0
  * Requires at least: 6.0
  * Requires PHP:      7.4
  * Author:            Thierry Gustin
@@ -94,14 +94,14 @@ if ( $eclair_export_problems ) {
 }
 unset( $eclair_export_problems );
 
-define( 'ECLAIR_EXPORT_VERSION', '1.0.2' );
-define( 'ECLAIR_EXPORT_FORMAT', '1.0' );
+define( 'ECLAIR_EXPORT_VERSION', '1.1.0' );
+define( 'ECLAIR_EXPORT_FORMAT', '1.1' );
 define( 'ECLAIR_EXPORT_FILE', __FILE__ );
 define( 'ECLAIR_EXPORT_DIR', __DIR__ );
 
 // 3. Loading.
 try {
-	foreach ( array( 'util', 'storage', 'detector', 'multilang', 'shortcodes', 'converter', 'seo', 'redirects', 'collector', 'diagnostic', 'report', 'exporter', 'plugin' ) as $eclair_export_part ) {
+	foreach ( array( 'util', 'storage', 'detector', 'multilang', 'shortcodes', 'converter', 'seo', 'redirects', 'collector', 'diagnostic', 'report', 'exporter', 'sender', 'abilities', 'plugin' ) as $eclair_export_part ) {
 		$eclair_export_path = __DIR__ . '/includes/class-eclair-export-' . $eclair_export_part . '.php';
 		if ( ! is_readable( $eclair_export_path ) ) {
 			throw new RuntimeException( 'Fichier manquant / Missing file: includes/class-eclair-export-' . $eclair_export_part . '.php — réinstallez l’extension avec le ZIP officiel / reinstall the plugin from the official ZIP.' );

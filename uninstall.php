@@ -27,7 +27,7 @@ if ( is_string( $eclair_export_name ) && preg_match( '~^eclair-export-[a-f0-9]{3
 		@rmdir( $eclair_export_dir ); // phpcs:ignore WordPress.PHP.NoSilencedErrors
 	}
 }
-foreach ( array( 'eclair_export_storage', 'eclair_export_job', 'eclair_export_lock', 'eclair_export_diagnostic', 'eclair_export_branding' ) as $eclair_export_option ) {
+foreach ( array( 'eclair_export_storage', 'eclair_export_job', 'eclair_export_lock', 'eclair_export_diagnostic', 'eclair_export_branding', 'eclair_export_send' ) as $eclair_export_option ) {
 	delete_option( $eclair_export_option );
 }
 wp_clear_scheduled_hook( 'eclair_export_cleanup' );

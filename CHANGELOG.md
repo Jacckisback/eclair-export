@@ -1,5 +1,24 @@
 # Changelog
 
+## 1.1.0 — 2026-11-10
+
+La migration en un seul geste : le paquet part tout seul vers le site Éclair.
+
+- **Envoi direct vers Éclair.** Collez la clé de liaison créée dans Éclair (Import WordPress › Créer une clé de liaison) et cliquez sur « Lancer la migration » : le paquet est préparé puis envoyé au nouveau site par morceaux, quelle que soit sa taille. Plus de téléchargement, plus de limite d'envoi de l'hébergeur, plus de FTP.
+  - La clé est vérifiée avant de préparer quoi que ce soit : une mauvaise clé ne coûte rien.
+  - Une coupure ne fait rien perdre : l'envoi reprend là où il s'était arrêté, et chaque archive est contrôlée par son empreinte à l'arrivée.
+  - La clé ne permet que de déposer le paquet, elle dure deux heures et ne sert qu'une fois. Elle n'est jamais affichée à l'écran ni gardée après l'envoi ; le paquet est supprimé de WordPress dès qu'il est arrivé.
+  - Le téléchargement du paquet reste possible, et un paquet déjà prêt peut être envoyé après coup.
+  - En ligne de commande : `wp eclair export --send=<clé>` et `wp eclair send <clé>` (reprise).
+  - Nécessite Éclair avec la réception directe (version qui suit la 2.2.0) ; avec une version plus ancienne, un message clair le dit et le téléchargement fonctionne comme avant.
+- **Nouvel écran**, en trois étapes visibles : Diagnostic, Migration, Import dans Éclair. Score de compatibilité en un coup d'œil, points d'attention classés par couleur, deux barres d'avancement (préparation, envoi), options rangées dans un volet, et ce qu'il reste à faire dans Éclair expliqué en trois lignes une fois le paquet livré.
+- **SEO.**
+  - Réglages du site exportés en plus (`seo.json`, format 1.1) : profils sociaux, compte X et image de partage par défaut, depuis Yoast et Rank Math. Éclair les reprend avec la validation Search Console et Bing, le logo et l'icône du site.
+  - Le diagnostic signale, sans bloquer, les images sans texte alternatif et les contenus publiés sans méta-description : la migration est le bon moment pour les corriger.
+- **Claude et ChatGPT.** Sur WordPress 6.9 et plus, le diagnostic et la migration sont déclarés à l'API Abilities (`eclair-export/diagnose`, `eclair-export/migrate`) : avec l'adaptateur MCP de WordPress, un assistant peut diagnostiquer le site et lancer l'envoi vers Éclair. Réservé aux administrateurs, rien n'est modifié sur le site WordPress. Côté Éclair, le connecteur MCP donne à l'assistant le bilan de l'import pour finir la migration.
+- Correctif : les boutons « Reprendre » et « Annuler » restaient affichés quand ils devaient être masqués.
+- Tests : clé de liaison (14 cas), API Abilities et refus d'une mauvaise clé sur un vrai WordPress, envoi direct WordPress → Éclair dans le banc d'essai de bout en bout.
+
 ## 1.0.2 — 2026-11-09
 
 - Démarrage sûr : l'extension ne provoque plus jamais d'« erreur fatale » à l'activation.
